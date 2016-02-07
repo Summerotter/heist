@@ -1,0 +1,9 @@
+2/6/2016
+Entry 1:
+-Added moving around city
+-Better skeletoned up locations
+-Bank working (not tested automatic processes).
+-Bank deducts 1 hour if you do any number of transactions when you visit.
+-Job working, excepting stamina and stress. Deducts 10 hours or max available.
+-City screen now displays time available
+-Roadmap Next Entry: End of Day function for Home and Hideout, stamina/stress loss at work, work events[bonus cash,skill boost,stam boost, and negative versions]

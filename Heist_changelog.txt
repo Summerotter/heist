@@ -6,4 +6,13 @@ Entry 1:
 -Bank deducts 1 hour if you do any number of transactions when you visit.
 -Job working, excepting stamina and stress. Deducts 10 hours or max available.
 -City screen now displays time available
--Roadmap Next Entry: End of Day function for Home and Hideout, stamina/stress loss at work, work events[bonus cash,skill boost,stam boost, and negative versions]
+
+Roadmaps:
+-Roadmap Entry 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events[bonus cash,skill boost,stam boost, and negative versions]
+-Roadmap Entry 3: XP system and Skill/Stat Increases
+-Roadmap Entry 4: Market and Items, Bar
+-Roadmap Entry 5: Heist System skeleton designed
+-Roadmap Entry 6: Heist System skeleton written
+-Roadmap Entry 7: Heist System fleshed out, would need more fluff
+-Roadmap Entry 8: Saving and Loading System with SQLAlchemy(?), Main Menu instead straight to city.menu()
+-Roadmap Entry 9: Polish the UI

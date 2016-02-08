@@ -18,9 +18,10 @@ class City:
         
     def advance_day(self,penalty=0):
         '''called when ending a day at Hideout or Home, or by a Heist'''
-        self.available_time = self.max_time - penalty
+        self.available_time = self.max_time + penalty
         self.total_days += 1
         job.can_work = True
+        character.update_everything()
         if self.current_day < 7:
             self.current_day += 1
         else:
@@ -105,7 +106,7 @@ class Bank:
         #called by End of Week function by City object.
         self.account -= self.expense_sum
         if self.account < 100:
-            character.stress += 1
+            character.stats['stress']['current'] -= 1
             #if the bank account is too low, it will cause additional stress at the end of the week.
         if self.account < 0:
             self.account -= self.fee
@@ -328,38 +329,107 @@ class Bar:
                 self.buy_booze()
             else:
                 print("Not a valid option")
+                
+class EventManager:
+    def __init__(self):
+        '''job table here temporarily. Will be moved to seperate events file at some point.'''
+        '''then it would be self.job_event_table = imported thing from other file'''
+        self.job_event_table = {
+        'job_1': {
+            'text': "You seemed to understand mechanics better! +1 to your skill.",
+            'type': 'skill_up',
+            'key': 'mechanics',
+            'value': 1,
+            },
+        'job_2': {
+            'text': "Work was tiring today, and drained you an extra 1 stamina per hour.",
+            'type': 'stat_mod_per_hour',
+            'key': 'stamina',
+            'value': 1,
+            },
+        'job_3': {
+            'text': "You got shifted to doing some dangerous stuff, but it has a +"+bank.symbol+"1 an hour pay bonus."
+            'type': 'pay_mod',
+            'key': None,
+            'value': 1,
+            },
+        'job_4': {
+            'text': "There was a problem with a shipment, and you were idle for an hour. Boss says he aint paying you. -1 hours of work.",
+            'type': 'time_mod',
+            'key': None,
+            'value': -1,
+            },
+        }
+        self.job_keys = list(self.job_event_table.keys())
+        
+    
+    def job_event(self):
+        event = self.job_event_table[self.job_keys[randint(0,len(self.job_keys)-1)]]
+        #might actually be useful for a case|switch, value of lambdas, since everything is sorta standardized up to the impact.
+        if event['type'] == 'skill_up':
+            character.skills[event['key']] += event['value']
+        if event['type'] == 'stat_mod_per_hour':
+            job.modified_per_hour_stat_cost[event['key']] += event['value']
+        if event['type'] == 'pay_mod':
+            job.modified_pay += event['value']
+        if event['type'] == 'time_mod':
+            job.modified_hours += event['value']
+        job.event_string = event['text']
+        
+        
         
 class Job:
     def __init__(self):
         self.description = ["Your workplace",'Shop as busy as ever','This tedious place again']
         self.base_pay = 9.00
         self.can_work = True
+        self.event_string = ''
+        self.hours = 0
+        self.earned = 0
+        self.modified_pay = 0
+        self.modified_hours = 0
+        self.base_per_hour_stat_cost = {'stamina':1, 'stress': 0, 'health':0,}
+        self.modified_per_hour_stat_cost = {'stamina':0, 'stress': 0, 'health':0,}
+        self.total_stat_cost = {'stamina':0, 'stress': 0, 'health':0,}
     
     def work(self):
         '''formula for work is 9.00 + character.skill[mechanics]. At Mechanics 1 rate is 10.00/hour, Mechanics 2 is 11.00/hour, 5 is 14 etc.'''
         '''10 hours work max, but will auto-consume all availble hours if less. Final pay will be told after Event, and autodeposits in Bank.'''
         '''Work Event adds Stress and reduces Stamina'''
-        if city.available_time >= 10:
-            hours = 10
-            city.available_time -= 10
-        else:
-            hours = city.available_time
-            city.available_time = 0
-        money_earned = (self.base_pay + character.mechanics) * hours
-        bank.account += money_earned
+        city.available_time -= self.hours
+        self.modified_pay = self.base_pay + character.stats['mechanics']['mod']
+        self.modified_hours = self.hours
+        self.modified_per_hour_stat_cost = self.base_per_hour_stat_cost
+        self.total_stat_cost = {'stamina':0, 'stress': 0, 'health':0,}
+        event_manager.job_event()
+        '''job events can cause unpaid hours, extra pay hours, bonus or penalty to wages, or a skill or stat boost'''
+        self.earned = self.modified_pay * self.modified_hours
+        for stat in self.modified_per_hour_stat_cost:
+            self.total_stat_cost[stat] = self.modified_hours * self.modified_per_hour_stat_cost[stat]
+            character.stats[stat]['current'] -= self.total_stat_cost[stat]
+        bank.account += self.earned
         self.can_work = False
-        print("After",hours,"of hard labor in hte mechanic shop, with a Mechanics Skill of ",character.mechanics,"you have earned",bank.symbol+str(money_earned)+"!")
+        print("After",self.hours,"of hard labor in hte mechanic shop, with a total Mechanics Skill of ",character.stats['mechanics']['mod'],"you have earned",bank.symbol+str(self.earned)+"!")
+        if self.event_string != '':
+            print(event_string)
         print("It gets automatically deposited into your bank account.")
-        print("Also you prettymuch get kicked out of the shop when your shift is over")
+        print("Work also took out of you",self.total_stat_cost['stamina'],"points of stamina",self.total_stat_cost['stress'],"stress control",self.total_stat_cost['health'],"health."
+        print("Also you pretty much get kicked out of the shop when your shift is over")
         print()
+        
+    
         
     def print_menu(self):
         print()
-        print("You can [W]ork, or you can ['L']eave.")
+        print("You can [W]ork for",self.hours,"hours, or you can ['L']eave.")
         print()
         
     def menu(self):
         desc = self.description[randint(0,len(self.description)-1)]
+        if city.available_time >= 10:
+            self.hours = 10
+        else:
+            self.hours = city.available_time
         print()
         print(desc)
         while desc != '':
@@ -391,7 +461,7 @@ class Home:
     def __init__(self):
         self.descritpion = ["This is your home", 'This is the castle', 'This is where you and your so live',]
         self.base_stamina_restoration = 1
-        self.base_stress_reduction = 1
+        self.base_stress_restoration = 1
         self.bonus_stam = 0
         self.bonus_stress = 0
         self.upgrades = {'Example':{'upkeep':0,'type':'stam','value':0,},}
@@ -407,7 +477,25 @@ class Home:
         
     def end_night(self):
         '''ends the day. consumes all remaining hours, restores stamina and reduces stress via base rate per hour + modifiers. Can cause event that instead raises stress if Health threshhold is breached; the SO doesn't like seeing you hurt and will argue with you over the Heists'''
-        print("This would end the day and have you sleep in your bed with your SO, restoring stamina and stress")
+        hours = city.available_time
+        if randint(1,100) >60 and self.stats['health']['penalty']:
+            '''if I had a proper event system, this is where a spawn_event(home) would go!'''
+            '''instead you just get a 40% chance of no stress healing and additional penalty if you're at or below Health threshold.'''
+            stamina_regained = (self.bonus_stam + self.base_stamina_restroration) * hours
+            character.stats['stamina']['current'] += stamina_regained
+            stress_lost = randint(1,2)
+            character.stats['stress']['current'] -= stress_lost 
+            print("You had a fight with your SO over your escapades. They're worried you might not come back one day, but you know its the only way for a better life for you two. You've lost",stress_lost,"points worth of stress handling.")
+            print("You did recover some stamina, up to",stamina_regained,"points worth.")
+        else:
+            stamina_regained = (self.bonus_stam + self.base_stamina_restroration) * hours
+            stress_regained = (self.bonus_stress + self.base_stress_restoration) * hours
+            character.stats['stress']['current'] += stress_regained
+            character.stats['stamina']['current'] += stamina_regained
+            print("Resting in your home for",hours,"hours gets you up to",stamina_regained,"stamina and,"stress_regained,"stress hanlding back.")
+            print("But not more than your max!")
+        city.advance_day()
+        #kicks you back to hideout.menu()
         
     def print_menu(self):
         print()
@@ -462,7 +550,38 @@ class Hideout:
         
     def end_night(self, character):
         '''ends the day. Consumes remaining hours. Restores health and stamina as per base, plus mods. Can cause event that raises stress for not being Home'''
-        print("Normally, this ends the day, but the mechanic isn't here yet. Would gain health and stamina.")
+        hours = city.available_time
+        stamina_regained = (self.stamina_modifier + self.base_stamina_restroration) * hours
+        health_regained = (self.health_modifier + self.base_health_restoration) * hours
+        character.stats['health']['current'] += health_regained
+        character.stats['stamina']['current'] += stamina_regained
+        if randint(1,100) >80:
+            '''if I had a proper event system, this is where a spawn_event(hideout) would go!'''
+            '''instead you just get a 20% chance of more stress.'''
+            stress_lost = randint(1,2)
+            character.stats['stress']['current'] -= stress_lost
+            print("You miss your SO, and the thoughts of being without them has decreased your stress handling by",stress_lost)
+            
+        print("Resting in the hideout for",hours,"hours gets you up to",stamina_regained,"stamina and,"health_regained,"health back.")
+        print("But not more than your max!")
+        city.advance_day()
+        #kicks you back to hideout.menu()
+        
+    def end_night_penalty(self):
+        '''ends the day. Called by HeistDirector if the heist used up the next day's hours, too'''
+        #there's 24 hours in a day. minimum of 4 for sleep, so normally just 20. But since there was no sleep, we'll count that 4.
+        time_lost = city.available_time + 4
+        if time_lost > 0:
+            time_lost = 0
+        #this checks if you were 4 or fewer hours in time-debt, and puts you to 0 instead of a negative. No gaining hours this way!      
+        character.stats['stamina'] -= 1
+        character.stats['stress'] += 1
+        city.advance_day(penalty=time_lost)
+        #calls advance_day function for city. Passes penalty along.
+        print("Blurb about getting no sleep or arriving back mid-day with no rest.")
+        hideout.menu()
+        #end_night doesn't need this since it was called from the menu already, but this is called from the HeistManager run_heist method.
+        
         
     def heist(self, character):
         '''goes on a heist. May list multiple options with differing difficulty and reward levels. Seperate module'''
@@ -514,15 +633,49 @@ class Character:
         self.so_desc = "so desc"
         #names and desc. Awww!
         
+        self.stats = {
+            'health': {
+                'current':10,
+                'max': 10,
+                'threshold': 5,
+                'penalty': 0,
+                },
+            'stamina': {
+                'current':10,
+                'max':10,
+                'threshhold':5,
+                'penalty': 0,
+                },
+            'stress_handling': {
+                'current':10,
+                'max': 10,
+                'treshhold':5,
+                'penalty': 0,
+                },
+            }
         
-        self.health = 10
-        self.stamina = 10
-        self.stress = 0
-        self.stress_threshhold = 5
-        self.shoot = 1
-        self.sneak = 1
-        self.mechanics = 1
+        self.skills = {
+            'shoot': {
+                'skill': 1,
+                'equipment': ('Basic Pistol',0),
+                'mod' : 0,
+                },
+            'sneak': {
+                'skill':1,
+                'equipment': ('Normal Clothing',0),
+                'mod':0,
+                },
+            'mechanics': {
+                'skill': 1,
+                'equipment': ('Simple Tools',0),
+                'mod': 0,
+                },
+            }
+        
         #stats and skills
+        #roll penalty used by stat system
+        
+        #keeps track of 
         
         self.cash_on_hand = 0
         self.total_xp = 0
@@ -530,11 +683,33 @@ class Character:
         #xp and cash, obv. total xp is all XP ever owned, available xp is what can be spent
         
         self.inventory = {}
-        self.tools = {'Simple Tools':0}
-        self.gun = {'Basic Pistol':0}
-        self.clothing = {'Normal Clothing':0}
         #inventory is all the items non-equipped that the character owns.
-        #tools, gun, and clothing are equipment that gives a bonus to mechanics, shoot, and sneak respectively.
+        #perhaps item_id,quantity?
+        
+       
+        
+        def update_stat(self,stat):
+            '''for applying damage taken or healing events/items'''
+            if self.stats[stat]['current'] > self.stats[stat]['max']:
+                self.stats[stat]['current'] = self.stats[stat]['max']
+            if self.stats[stat]['current'] <= self.stats[stat]['threshhold']:
+                self.stats[stat]['penalty'] = 1
+            if self.stats[stat]['current'] > self.stats[stat]['threshhold']:
+                self.stats[stat]['penalty'] = 0
+            if self.stats[stat]['current'] < 0:
+                self.stats[stat]['current'] = 0
+                
+        def update_skill(self,skill):
+            '''updating modifier when leveling up or changing equipment'''
+            self.skills[skill]['mod'] = self.skills[skill]['skill'] + self.skills[skill]['equipment'][1]
+                
+        def update_everything(self):
+            '''End of day function to force recalcs'''
+            for stat in self.stats:
+                self.update_stat(stat)
+            for skill in self.skills:
+                self.update_skill(skill)
+                
         
 ##Still need to flesh out Heists. Difficulty of 0-4, "Simple, Easy, Tough, Challenging, Impossible". 25/50/75/100/200 cash-of-loot per stage. 
 ##Lower difficult weighted towards 3 stages, higher towards 5. 
@@ -545,89 +720,8 @@ class Character:
 ##End of Heist is +1XP and tally's up total.
 ##Heists use up 15 hours flat. If character has 15 or few hours left it automatically ends the day with no rest. If this ends up being a large deficiet, hours available the next day will go down.
         
-'''
-class HeistDirector:
-    def __init__(self):
-        self.heist_types = ['Factory','Office','Warehouse','Airship Docks',]
-        self.heist_scenes = {
-        'Factory':(('blurb','gunoption','sneakoption','mechanicoption','staminaoption',),),
-        'Office':(),
-        'Warehouse':(),
-        'Airship Docks':(),
-        }
-        ##These nested lists of Scene Text and appropriate Test Text.
-        
-        self.heist_blurbs = {
-        'Factory':(),
-        'Office':(),
-        'Warehouse':(),
-        'Airship Docks':(),
-        }
-        self.heist_names = {
-        'Factory':(),
-        'Office':(),
-        'Warehouse':(),
-        'Airship Docks':(),
-        }
-        ##Names and Blurbs, randomly chosen by type
-        
-        self.difficulty = {
-            0: 'Simple',
-            1: 'Easy',
-            2: 'Tough',
-            3: 'Difficult',
-            4: 'Challenging',
-        }
-## Sets the names of the difficulty numbers.
-        self.heist_options = []
-        ## for keeping track of options until generated again.
-        
-        self.xp_earned = 0
-        self.loot = 0
-    
-    def generate_heist_options(self):
-        self.heist_options = []
-        for each in range(3):
-            type = self.heist_types[randint(0,3)]
-            #gets type. Needs to be updated if more types added.
-            name = self.heist_names[type][randint(0,len(self.heist_names[type])-1)]
-            blurb = self.heist_blurbs[type][randint(0,len(self.heist_blurbs[type])-1)]
-            difficulty = randint(0,4)
-            ##Needs weighting based on XP
-            self.heist_options.append((type,name,blurb,difficulty,))
-            
-    def generate_heist(self,heist):
-        type = heist[0]
-        name = heist[1]
-        blurb = heist[2]
-        difficulty = heist[3]
-        event_count = randint(3-5)
-        event_numbers = []
-        while event_numbers < event_count:
-            number = randint(0,len(self.heist_scenes[type])-1)
-            if number not in event_numbers:
-                event_numbers.append(number)
-        #needs weighting of some sort for difficulty
-        print(name+": "+blurb)
-        for event in event_numbers:
-            success = False
-            scene = self.heist_scenes[type][event]
-            blurb = scene[0]
-            gunopt = (scene[1], randint(1,3) * 1 + difficulty)
-            sneakopt = (scene[2], randint(1,3) * 1 + difficulty)
-            mechopt = (scene[3], randint(1,3) * 1 + difficulty)
-            stamopt = (scene[4], randint(1,3) * 1 + difficulty)
-            
-            Assuming gunopt for now 
-            choice = input("Option: ")
-            if choice == "1":
-                charroll = character.shoot - character.stress_penalty - character.health_penalty - character.stamina_penalty + randint(1,10)
-                testroll = gunopt[1] + randint(1,5)
-                if charroll >= testroll:
-                    success = True
-                    self.xp_earned += 1
-                    self.loot = randint(1+difficulty,3+difficulty)
-                    '''
+
+                    
 city = City()
 bank = Bank()
 market = Market()

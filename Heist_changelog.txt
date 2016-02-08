@@ -7,12 +7,31 @@ Entry 1:
 -Job working, excepting stamina and stress. Deducts 10 hours or max available.
 -City screen now displays time available
 
+2/7/2016:
+Entry 2:
+-Had inspiration, completed all of Roadmap 5 and a good portion of 6. 
+-Changes character stats from individual attributes to a character.stats dict. Left names,cash,xp,inventory, alone for now.
+-Hideout end_night_penalty done.
+-Added max health/stam to character stats, modified versions of skill rolls, and low stam/health high stress penalty tracking
+-added character.update_stats method to be called when resting.
+-character stress changed to stress_handling, which allows it to be more=better like other stats.
+-skills and stats split up into... skills and stats. Allows better iteration.
+-added character.update_skill,.update_stat, .update_all methods.
+-moved equipment to character.skills dict as string:val tupple.
+-Finished end_night for Hideout and Home, left opening for Event system later.
+-Overhauled Job class to include new modifiers seperate from base for manipulation
+-Job hours now show up in menu. Base 1 hour takes 1 stamina. Maybe needs a bit of work for balance.
+-New Event Manager, currently with job_event_table and job_event() method. Might actually use case_switch+lambda for the methods.
+-Basic job events added for guide on how to handle events. If I standardize all the location classes, might be able to do single event_handler.
+-Bank autodeduct modified as per stress change
+-Roadmap 2 is complete, if untested and with a minimal event list.
+
 Roadmaps:
--Roadmap Entry 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events[bonus cash,skill boost,stam boost, and negative versions]
--Roadmap Entry 3: XP system and Skill/Stat Increases
--Roadmap Entry 4: Market and Items, Bar
--Roadmap Entry 5: Heist System skeleton designed
--Roadmap Entry 6: Heist System skeleton written
--Roadmap Entry 7: Heist System fleshed out, would need more fluff
--Roadmap Entry 8: Saving and Loading System with SQLAlchemy(?), Main Menu instead straight to city.menu()
--Roadmap Entry 9: Polish the UI
+-Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Written, not tested, incomplete Event list]
+-Roadmap 3: XP system and Skill/Stat Increases
+-Roadmap 4: Market and Items, Bar, End Of Game/Victory (Purchased papers)
+-Roadmap 5: Heist System skeleton designed [DONE]
+-Roadmap 6: Heist System skeleton written [PARTIAL]
+-Roadmap 7: Heist System fleshed out, would need more fluff
+-Roadmap 8: Saving and Loading System with SQLAlchemy(?), Main Menu instead straight to city.menu()
+-Roadmap 9: Polish the UI

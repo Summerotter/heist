@@ -666,6 +666,7 @@ class Hideout:
         self.upgrades = {}
         self.health_modifier = 0
         self.stamina_modifier = 0
+        self.level_up_options = { '1': ('health','stat'), '2': ('stamina','stat'), '3': ('stress','stat'), '4': ('shoot','skill'), '5': ('sneak','skill'), '6': ('mechanics','skill',), }
         
     
     def add_upgrade(self):
@@ -688,17 +689,20 @@ class Hideout:
             skill_menu[str(len(skill_menu)+len(stat_menu)+1)]= (character.skills[skill]['string'],character.skills[skill]['skill'],skill,)
         run_menu = True
         while run_menu:
-            self.print_menu_xp(stat_menu,skill_menu)
+            self.print_menu_xp()
             option = str(input("Your decision: "))
             if option == 'x':
                 run_menu = False
                 print("Going back to the Hideout menu")
                 print()
-            elif option in stat_menu:
+            elif option in self.level_up_options:
                 print("Running option",option)
-                run_menu = character.raise_stat(stat_menu[option][3])
-            elif option in skill_menu:
-                run_menu = character.raise_skill(skill_menu[option][2])
+                if self.level_up_options[option][1] == 'stat':
+                    run_menu = character.raise_stat(self.level_up_options[option][1])
+                elif self.level_up_options[option][1] == 'skill':
+                    run_menu = character.raise_skill(self.level_up_options[option][1])
+                else:
+                    pass
             elif option == "cheat":
                 character.add_xp(100)
                 print("Cheater!")
@@ -707,14 +711,12 @@ class Hideout:
                 print("Not a valid option, that.")
             
         
-    def print_menu_xp(self,stat_menu,skill_menu):
+    def print_menu_xp(self):
         '''called by spend_xp_menu to do the needful'''
         print()
         print("Put in the number of the one you want")
-        for each in stat_menu:
-            print(each, stat_menu[each])
-        for each in skill_menu:
-            print(each,skill_menu[each])
+        print(self.level_up_options)
+        print("Can build static form for this")
         print("or choose 'x' to exit")
         print()
         

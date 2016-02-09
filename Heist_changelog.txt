@@ -8,7 +8,7 @@ Entry 1:
 -City screen now displays time available
 
 2/7/2016:
-Entry 2:
+Entry 1:
 -Had inspiration, completed all of Roadmap 5 and a good portion of 6. 
 -Changes character stats from individual attributes to a character.stats dict. Left names,cash,xp,inventory, alone for now.
 -Hideout end_night_penalty done.
@@ -26,10 +26,22 @@ Entry 2:
 -Bank autodeduct modified as per stress change
 -Roadmap 2 is complete, if untested and with a minimal event list.
 
+2/9/2016:
+Entry 1:
+-minor bugfixing; mainly about typoes.
+-added character.nights_not_home. Added by Hideout end-day functions, set to 0 by home.
+-minor fixes to Job and Job Event Handling. Enabled bank auto-deduct. Roadmap 2 testing complete
+-Part of Roadmap 3: Added character.mirror method for displaying stats. 
+-RM3: added character.add_xp method, pass a value and adds it to character.total_xp and character.available_xp.
+-Added 'string' entry for character.stats[stat] and skills, added 'level' for stats.
+-Added character.raise_skill and character.raise_stat methods. 
+-hideout spend_xp_menu and print_xp_menu methods written, although it still needs polish; currently dumping raw dicts. Process works thouugh.
+-fleshed out Bar, added Bar Events for EventManager
+
 Roadmaps:
--Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Written, not tested, incomplete Event list]
--Roadmap 3: XP system and Skill/Stat Increases
--Roadmap 4: Market and Items, Bar, End Of Game/Victory (Purchased papers)
+-Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]
+-Roadmap 3: XP system and Skill/Stat Increases [Complete/Alpha - Menu system needs polish but works.]
+-Roadmap 4: Market and Items, Bar, End Of Game/Victory (Purchased papers) [Bar Done, no others yet]
 -Roadmap 5: Heist System skeleton designed [DONE]
 -Roadmap 6: Heist System skeleton written [PARTIAL]
 -Roadmap 7: Heist System fleshed out, would need more fluff

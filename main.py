@@ -30,9 +30,12 @@ class City:
             bank.deductions()
             '''market.refresh() here'''
             
+    def time_for_menu(self):
+        print("It is day",self.current_day," of week", str(self.weeks)+".")
+        print("There are",self.available_time,"hours left available today.")
+            
     def print_menu(self):
-        print("It is day",city.current_day," of week", str(city.weeks)+".")
-        print("There are",city.available_time,"hours left available today.")
+        city.time_for_menu()
         print("L for Load | S for Save")
         print("B for Bank | J for Job ")
         print("M for Market | C for Store")
@@ -163,8 +166,8 @@ class Bank:
             print("You withdrew",self.symbol+str(amt),"from your account.")
         
     def print_menu(self):
-        print("It is day",city.current_day," of week", str(city.weeks)+".")
-        print("There are",city.available_time,"hours left available today.")
+        
+        city.time_for_menu()
         print()
         print(" You have",self.symbol+str(self.account),"in your account, and",self.symbol+str(character.cash_on_hand),"on you.")
         print(" Your expenses are",self.symbol+str(self.expense_sum),"a week.")
@@ -256,8 +259,8 @@ class Market:
 
         
     def print_menu(self,market=True):
-        print("It is day",city.current_day," of week", str(city.weeks)+".")
-        print("There are",city.available_time,"hours left available today.")
+        
+        city.time_for_menu()
         print()
         if market:
             '''prints market specific menu'''
@@ -341,8 +344,8 @@ class Bar:
             print("You flirt with your SO")
         
     def print_menu(self):
-        print("It is day",city.current_day," of week", str(city.weeks)+".")
-        print("There are",city.available_time,"hours left available today.")
+        
+        city.time_for_menu()
         print()
         print("Current beer price is",bank.symbol+str(self.beer_price),"and relieves",self.beer_stress,"of stress.")
         print("This is a bar. Buy booze, or flirt with your SO who works here.")
@@ -547,8 +550,8 @@ class Job:
     
         
     def print_menu(self):
-        print("It is day",city.current_day," of week", str(city.weeks)+".")
-        print("There are",city.available_time,"hours left available today.")
+        
+        city.time_for_menu()
         print()
         print("You can [W]ork for",self.hours,"hours, or you can ['L']eave.")
         print()
@@ -628,8 +631,8 @@ class Home:
         #kicks you back to hideout.menu()
         
     def print_menu(self):
-        print("It is day",city.current_day," of week", str(city.weeks)+".")
-        print("There are",city.available_time,"hours left available today.")
+        
+        city.time_for_menu()
         print()
         print(" 'A'dd Upgrade | 'U'ninstall Upgrade ")
         print(" 'R'est        |  'L'eave ")
@@ -681,12 +684,6 @@ class Hideout:
     def spend_xp_menu(self):
         '''allows character to spend xp to increase skills and max stats by +1, cost is current level.'''
         print("This is main XP spending loop")
-        stat_menu = {}
-        skill_menu = {}
-        for stat in character.stats:
-            stat_menu[str(len(stat_menu)+1)] = (character.stats[stat]['string'],character.stats[stat]['max'],character.stats[stat]['level'],stat,)
-        for skill in character.skills:
-            skill_menu[str(len(skill_menu)+len(stat_menu)+1)]= (character.skills[skill]['string'],character.skills[skill]['skill'],skill,)
         run_menu = True
         while run_menu:
             self.print_menu_xp()
@@ -698,9 +695,9 @@ class Hideout:
             elif option in self.level_up_options:
                 print("Running option",option)
                 if self.level_up_options[option][1] == 'stat':
-                    run_menu = character.raise_stat(self.level_up_options[option][1])
+                    run_menu = character.raise_stat(self.level_up_options[option][0])
                 elif self.level_up_options[option][1] == 'skill':
-                    run_menu = character.raise_skill(self.level_up_options[option][1])
+                    run_menu = character.raise_skill(self.level_up_options[option][0])
                 else:
                     pass
             elif option == "cheat":
@@ -715,7 +712,9 @@ class Hideout:
         '''called by spend_xp_menu to do the needful'''
         print()
         print("Put in the number of the one you want")
-        print(self.level_up_options)
+        print("1: Max Health",character.stats['health']['max'],":",str(character.stats['health']['level'])+"xp for +1  |  4: Shoot",str(character.skills['shoot']['skill']),":",str(character.skills['shoot']['skill'])+"xp for +1") 
+        print("2: Max Stamina",character.stats['stamina']['max'],":",str(character.stats['stamina']['level'])+"xp for +1 |  5: Sneak",str(character.skills['sneak']['skill']),":",str(character.skills['sneak']['skill'])+"xp for +1") 
+        print("3: Max Stress",character.stats['stress']['max'],":",str(character.stats['stress']['level'])+"xp for +1  |  6: Mechanics",str(character.skills['mechanics']['skill']),":",str(character.skills['mechanics']['skill'])+"xp for +1")
         print("Can build static form for this")
         print("or choose 'x' to exit")
         print()
@@ -764,8 +763,8 @@ class Hideout:
         print("Starts the Heist Menu. Not implimented at all currently.")
         
     def print_menu(self):
-        print("It is day",city.current_day," of week", str(city.weeks)+".")
-        print("There are",city.available_time,"hours left available today.")
+        
+        city.time_for_menu()
         print()
         print(" You can look in the 'M'irror")
         print(" 'T'rain | 'P'lan Heist ")

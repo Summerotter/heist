@@ -38,9 +38,15 @@ Entry 1:
 -hideout spend_xp_menu and print_xp_menu methods written, although it still needs polish; currently dumping raw dicts. Process works thouugh.
 -fleshed out Bar, added Bar Events for EventManager
 
+2/10/2016:
+Entry 1:
+-Improved and polished XP Stat/Skill Increase menu. Good for Beta.
+-moved grabbing date and time to city.time_for_menu(), called by all appropriate print_menu() methods
+
+
 Roadmaps:
 -Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]
--Roadmap 3: XP system and Skill/Stat Increases [Complete/Alpha - Menu system needs polish but works.]
+-Roadmap 3: XP system and Skill/Stat Increases [Complete/Beta]
 -Roadmap 4: Market and Items, Bar, End Of Game/Victory (Purchased papers) [Bar Done, no others yet]
 -Roadmap 5: Heist System skeleton designed [DONE]
 -Roadmap 6: Heist System skeleton written [PARTIAL]

@@ -53,18 +53,26 @@ Entry 1:
 -descriptions changed to 1 per timeframe, morning afternoon evening night
 -creating localization.py to move descriptions to
 -made Game class for loading/saving, don't know why I got so distracted. Currently disabled.
--Implimented heist_storage.py for types and scene lists.
--Implimented option_storage.py for storing scene options
+-Implemented heist_storage.py for types and scene lists.
+-Implemented option_storage.py for storing scene options
 -Began integrating HeistDirector from Roadmap 5/6. Had to stop for night. Finished before touching run_heist.
 -loot table skeleton written.
 
+2/12/2016
+Entry 1:
+-Heist sysem mostly integrated skeleton integrated. Missing stat and treasure modifications. Also no formatting.
+-loot addition now happening, slightly better formatting for things.
 
-Roadmaps:
+
+Alpha Roadmaps:
 -Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]
 -Roadmap 3: XP system and Skill/Stat Increases [Complete/Beta]
 -Roadmap 4: Market and Items, Bar, End Of Game/Victory (Purchased papers) [Bar Done, no others yet]
 -Roadmap 5: Heist System skeleton designed [DONE]
--Roadmap 6: Heist System skeleton written [PARTIAL]
--Roadmap 7: Heist System fleshed out, would need more fluff
--Roadmap 8: Saving and Loading System, Main Menu instead straight to city.menu() [Skeletoned]
+-Roadmap 6: Heist System skeleton written [DONE]
+-Roadmap 7: Heist System fully implemented [Working on it]
+-Roadmap 8: Saving and Loading System, Main Menu instead straight to city.menu() [Skeletoned, Game class should be ready to go.]
+
+Beta Roadmaps
 -Roadmap 9: Polish the UI
+-Ongoing: Expand Events/Heists

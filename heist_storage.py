@@ -24,13 +24,13 @@ If item is none, does not get displayed.
 scene_data_list = {
     'dock': {
         'd1': {
-            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['sta1',], 'item': ['itm1',]},
+            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': ['it1',]},
         },
         'd2': {
-            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['sta1',], 'item': None},
+            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': None},
         },
         'd3': {
-            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['sta1',], 'item': None},
+            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': None},
         },
     },
 }

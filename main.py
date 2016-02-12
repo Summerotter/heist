@@ -7,6 +7,10 @@ Written in Python3.4.2, Windows Environ
 '''
 from random import randint
 
+def pause_x():
+    print()
+    x = input("Press Enter to continue...")
+    print()
 
 
 class City:
@@ -426,7 +430,7 @@ class EventManager:
         
         self.bar_event_table = {
         'bar_1': {
-            'text': "A bar fight breaks out.You get hurt, and car cleared out for a bit.",
+            'text': "A bar fight breaks out.You get hurt, and bar cleared out for a bit.",
             'interrupt': True,
             'type': 'stat',
             'key': 'health',
@@ -776,7 +780,8 @@ class Hideout:
     def heist(self):
         '''goes on a heist. May list multiple options with differing difficulty and reward levels. Seperate module'''
         '''requires certain threshold of health AND stamina to attempt'''
-        print("Starts the Heist Menu. Not implimented at all currently.")
+        print("Awww shit bro!.")
+        director.menu()
         
     def print_menu(self):
         
@@ -882,6 +887,7 @@ class Character:
                 },
             }
         
+        self.total_penalty = 0
         #stats and skills
         
         self.xp_stage = 0
@@ -891,9 +897,9 @@ class Character:
         self.available_xp = 0
         #xp and cash, obv. total xp is all XP ever owned, available xp is what can be spent
         
-        self.inventory = {}
+        self.inventory = {'loot': {'qty':0,'value':0,},}
         #inventory is all the items non-equipped that the character owns.
-        #perhaps item_id,quantity?
+        #itemid: quantity, quality.
         
         
        
@@ -915,8 +921,10 @@ class Character:
             
     def update_everything(self):
         '''End of day function to force recalcs'''
+        self.total_penalty = 0
         for stat in self.stats:
             self.update_stat(stat)
+            self.total_penalty += self.stats[stat]['penalty']
         for skill in self.skills:
             self.update_skill(skill)
             
@@ -963,6 +971,14 @@ class Character:
         print()
         x = input("Press Enter to Continue")
         return run_menu
+        
+    def has_item(self, key, value=1):
+        if not key in self.inventory:
+            return False
+        elif self.inventory[key] < value:
+            return False
+        else:
+            return True
 
         
         
@@ -1010,6 +1026,9 @@ class Director:
         self.scene_data = heist_storage.scene_data_list
         self.scene_types = heist_storage.scene_type_list
         
+        import option_storage
+        self.option_data = option_storage.option_list
+        
         
         self.possible_heists = {}
         #dict with heists when chosing from menu
@@ -1020,25 +1039,25 @@ class Director:
         
         self.loot_table = {
             'loot': {
-                '1':0,
-                '2':0,
-                '3':0,
-                '4':0,
-                '5':0,
+                '1':1,
+                '2':2,
+                '3':4,
+                '4':8,
+                '5':16,
             },
             'cash': {
-                '1':0,
-                '2':0,
-                '3':0,
-                '4':0,
-                '5':0,
+                '1':10,
+                '2':25,
+                '3':50,
+                '4':100,
+                '5':200,
             },
             'item': {
-                '1':0,
-                '2':0,
-                '3':0,
-                '4':0,
-                '5':0,
+                '1':None,
+                '2':None,
+                '3':None,
+                '4':None,
+                '5':None,
             }
         }
         
@@ -1047,7 +1066,7 @@ class Director:
         self.possible_heists = {}
         #clears any prior heists.
         for heist in range(config.heist_count):
-            self.possible_heists[len(self.possible_heists)+1] = self.heist_generator()
+            self.possible_heists[str(len(self.possible_heists)+1)] = self.heist_generator()
             #first would be possible_heists[1], etc.
             
     def heist_generator(self):
@@ -1061,24 +1080,24 @@ class Director:
             heist['scene_count'] = config.scene_max
         elif heist['difficulty'] <= 0:
             heist['difficulty'] = 0
-            heist['scene_count'] = game.config.scene_min
+            heist['scene_count'] = config.scene_min
         else:
             heist['scene_count'] = randint(config.scene_min,config.scene_max)
             
             
         '''get type and blurb_id'''
-        heist['type'] = self.scene_types[randint(0,len(scene_types)-1)]
-        type_data = self.scene_types[type_key]
+        heist['type'] = list(self.scene_types.keys())[randint(0,len(self.scene_types)-1)]
+        type_data = self.scene_types[heist['type']]
         heist['blurb_id'] = type_data[0]+str(randint(1,type_data[1]))
 #        heist_foe = foes[type][randint(0,len(foes[type])-1)]
         
         heist['scene_list'] = []
-        scenes_of_type = list(self.scene_data[type].keys())
-        for scene in heist['scene_count']:
+        scenes_of_type = list(self.scene_data[heist['type']].keys())
+        for scene in range(heist['scene_count']):
             heist['scene_list'].append(scenes_of_type[randint(0,len(scenes_of_type)-1)])
                
         
-        heist['hours_cost'] = randint(config.scene_min_time_roll,config.scene_max_time_roll)+(config.scene_time_mod_per_scene*scene_count) 
+        heist['hours_cost'] = randint(config.scene_min_time_roll,config.scene_max_time_roll)+(config.scene_time_mod_per_scene*heist['scene_count']) 
         #defaults to 2-8 + 2 per scene, min 5, max 18.
         #variable. Needs work. Uses configs. Subtracts total from time_available when  heist ends
         
@@ -1090,17 +1109,54 @@ class Director:
     def run_heist(self, heist):
         self.results = {}
         #clearing prior heists
-        self.scene_list = heist['scenes']
+        self.scene_list = heist['scene_list']
         for key in self.scene_list:
-            scene = Scene(key,data)
+            print()
+            print()
+            scene = Scene(heist['type'],key,heist['difficulty'])
             scene.menu()
-        '''results and tally'''
+        self.handle_results(heist['hours_cost'])
+        self.end_heist(heist['hours_cost'])
+        
+    def handle_results(self,hours):
+        
+        size = len(self.results)
+        self.results['cash'] = 0
+        self.results['loot'] = 0
+        self.results['items'] = []
+        for i in range(0,size):
+            x = self.results[str(i)]
+            if x[1][0]:
+                self.results['loot'] += x[1][1][0]
+                self.results['cash'] += x[1][1][1]
+                if x[1][1][2] != None:
+                    self.results['items'].append(x[1][1][2])
+        character.cash_on_hand = self.results['cash']
+        character.inventory['loot']['qty'] += self.results['loot']
+        ##assumes (item,qty,val) tupple result
+        for item in self.results['items']:
+            if item[0] in character.inventory:
+                character.inventory[item[0]]['qty'] += item[1]
+            else:
+                character.inventory[item[0]] = {'qty':item[1],'value':item[2]}
+        print("Here's the results of your run:")
+        print("You earned "+bank.symbol+str(self.results['cash'])+", and "+str(self.results['loot'])+" pieces of loot!")
+        if self.results['items']:
+            print("You also earned ",self.results['items'])
+        print("Not bad for ",hours,"hours of work, eh?")
+        pause_x()
+        
+
+    
+    def end_heist(self, cost):
         self.run_menu = False
-        city.available_time -= heist['hours_cost']
+        city.available_time -= cost
         if city.available_time == 0:
             hideout.end_day()
+            hideout.menu()
         elif city.available_time < 0:
-            hideout.end_day_penalty()
+            hideout.end_night_penalty()
+            hideout.menu()
             ##you've got 20 hours in the day available; if you do anything in the morning and then heist you'll be back the next day instead.
             ##do not gain any health or stamina regen when this occurs.
         else:
@@ -1108,81 +1164,140 @@ class Director:
             
     def print_menu(self):
         '''Lists Heist options and back to Hideout'''
+        for i in self.possible_heists:
+            print(i, self.possible_heists[i])
+        print("Or x to go back to the Hideout")
     
     def menu(self):
-        '''self.run_menu = True'''
-        '''print planner blurb from hideout'''
-        '''print_menu()'''
-        '''while self.run_menu:'''
-        '''if choice == run_a_heist'''
-        '''tab--self.run_heist(heist)'''
+        self.run_menu = True
+        print("Planning blurb from hideout temp string")
+        self.generate_heist_options()
+        while self.run_menu:
+            self.print_menu()
+            choice = str(input("What'll it be? :")).lower()
+            if choice in self.possible_heists:
+                self.run_heist(self.possible_heists[choice])
+            elif choice == 'x':
+                self.run_menu = False
+                hideout.menu()
+            else:
+                print("Didn't catch that...")
         #run_heist will directly back to the hideout.
 
 class Scene:
-    '''A hiest is comprised of multiple Scenes'''
-    def __init__(self,type,scene_id,heist_data):
-        self.scene_id
-        self.scene_data = scene_data_storage[scene_id]
-        self.options = {}
-        self.options['s'] = self.scene.option_dict['shoot'][randint(0,len(self.scene.option_dict['shoot'])-1)]
-        self.options['s']['difficulty'] += heist_data.difficulty
+    '''A heist is comprised of multiple Scenes'''
+    
+    def __init__(self,type,scene_id,difficulty):
+        #heist has 'difficulty', 'scene_count', 'type', 'blurb_id', 'scene_list'(list), and 'hours_cost'
+        self.scene_id = scene_id
+        self.scene_data = director.scene_data[type][scene_id]
         
-        '''if there are requirements for option, check them here. Discard if not meeting requirements'''
-        '''Requirements can be skill or stat thresholds, or items in inventory'''
-        '''might drop those out for now. Rewrite character stats to be a dict for ease of access?'''
-        '''like, if requires_item elif requires_stat, can check directly by character.stats[requirement] >= Threshold '''
+        self.option_list = [("1",'shoot'),("2",'sneak'),("3",'mechanics'),("4","stamina"),]
+        self.options = {"1": {}, "2": {}, "3": {}, "4":{},}
+        #always shoot, sneak, mechanics, stamina.
+        if self.scene_data['options']['item'] != None:
+            self.option_list.append(("5","item"))
+            self.options["5"] = {}
+            #check if there's an item option. Pre-reqs later
+        for option in self.option_list:
+            id = self.scene_data['options'][option[1]][randint(0,len(self.scene_data['options'][option[1]])-1)]
+            self.options[option[0]]['id'] = id
+            self.options[option[0]]['data'] = director.option_data[id]
+            self.options[option[0]]['data']['difficulty'] += difficulty
+            #automates grabbing all that.
+            self.options[option[0]]['hidden'] = self.req_check(self.options[option[0]]['data']['requirement'])
+            if self.options[option[0]]['data']['attribute'] == "stamina":
+                self.options[option[0]]['data']['versus'] = character.stats['stamina']['level'] + character.total_penalty
+            elif self.options[option[0]]['data']['attribute'] == 'item':
+                self.options[option[0]]['data']['versus'] = 2
+                #stick in an item quality bonus/penalty?
+            else:
+                attribute = self.options[option[0]]['data']['attribute']
+                self.options[option[0]]['data']['versus']= character.skills[attribute]['mod'] + character.total_penalty
+                    
+    def req_check(self,req):
+        '''checks against requirements, either False, or tupple of skill/stat/item,key,value.'''
+        ''' used for building the option list hidden tag.'''
+        if req is None:
+            return False
+        elif req[0] == 'skill':
+            return character.skills[req[1]] >= req[2]
+        elif req[0] == 'stat':
+            return character.stats[req[1]] >= req[2]
+        elif req[0] == 'item':
+            return character.has_item(req[1],req[2],)
+        else:
+            return False
+            
         
-        '''check inventory for items that trigger options, adds here. Grenades, flashbangs''' 
+        
         '''Format strings for self.scene_data for flavoring and foe.'''
         '''Format strings for self.options[all] for flavoring, foe, and final difficulty'''
         '''self.choice_list = {} / for option in self.options: self.choice_list[len(self.choice_list)]= (option, self.options['blurb'])'''
         
-    def print_menu():
+    def print_menu(self):
+        for number in range(1,len(self.options)):
+            option = self.options[str(number)]
+            attribute = option['data']['attribute']
+            if attribute == 'item':
+                qty = character.inventory[option['data']['item']]['qty']
+                print(number+": ",config.get_text(option[id]+"menu"),": ("+option['data']['item'],qty,"Difficulty: ",option['data']['difficulty'])
+            else:
+                print(str(number)+": ",config.get_text(option['id']+"menu"),": ("+attribute,str(option['data']['versus']),"Difficulty: ",option['data']['difficulty'])
         '''prints option strings and option_choice_list for them'''
         '''for choice in self.choice_list: / print(choice,choice_list[choice][2])'''
         '''the above would be formatted nicer, yeah.'''
         
-    def menu():
-        print(self.scene_data['start_blurb'])
+    def menu(self):
+        print(config.get_text(self.scene_id+"start") )
         run_menu = True
         print()
         while run_menu:
             self.print_menu()
-            choice = input("Make your decision")
+            choice = input("Make your decision: ")
             '''format choice so it matches properly'''
-            if choice in self.choice_list:
-                results = test(self.options[choice])
-                if results['pass']:
-                    print(self.scene_data['success_blurb'])
+            print()
+            if choice in self.options:
+                results = self.test(self.options[choice]['id'],self.options[choice]['data'])
+                if results[0]:
+                    print(config.get_text(self.options[choice]['id']+"success"))
+                    print(config.get_text(self.scene_id+"success"))
                     run_menu = False
-                    director.results[self.scene_id] = results
+                    director.results[str(len(director.results))] = (self.scene_id,results)
                     #should collapse back to director control
                 else:
-                    print(self.scene_data['fail_blurb'])
                     run_menu = False
-                    director.results[self.scene_id] = results
+                    print(config.get_text(self.options[choice]['id']+"fail"))
+                    director.results[str(len(director.results))] = (self.scene_id,results)
                     #should collapse back to director control
+                print(config.get_text(self.scene_id+"end"))
+                pause_x()
             else:
                 print("That isn't an option here!")
+                
         
-    def test(option_data):
+    def test(self,id,data):
         '''unpack option data'''
         results = {}
-        if option_stat + randint(1,10) - character.total_penalties + character.total_mods >= randint(1,5) + total_difficulty:
-            results['pass'] = True
-            results['reward'] = grant_reward(data)
-            '''stat or item adjustsments made as per option_success_cost, added to results dict'''
+        if data['versus'] + randint(1,10) >= randint(1,5) + data['difficulty']:
+            return (True, self.grant_reward(data['difficulty']))
         else:
-            results['pass'] = False
-            '''stat or item adjustsments made as per option_success_cost, added to results dict'''
-        return results
+            return (False, (0,0,0))
             
         
-    def grant_reward(data):
+    def grant_reward(self,data):
         '''grabs reward per data'''
-        '''satchet system or table rolls, see below'''
-        '''returns result as tupple'''
-        return (loot, cash, item)
+        mod = data - character.xp_stage
+        temp = {}
+        for treasure in director.loot_table:
+            roll = randint(1,5) + mod
+            if roll <=1:
+                temp[treasure] = director.loot_table[treasure]["1"]
+            elif roll >=5:
+                temp[treasure] = director.loot_table[treasure]["5"]
+            else:
+                temp[treasure] = director.loot_table[treasure][str(roll)]
+        return (temp['loot'], temp['cash'], temp['item'])
         #note: Above defaults to None if None
 
 ##---Heist System End ---##
@@ -1292,6 +1407,7 @@ home = Home()
 hideout = Hideout()
 character = Character()
 event_manager = EventManager()
+director = Director()
 
 
 
@@ -1301,5 +1417,6 @@ event_manager = EventManager()
     
                     
 if __name__ == '__main__':
-    city.menu()
+    #city.menu()
     #game.main_menu()
+    director.menu()

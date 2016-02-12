@@ -20,9 +20,8 @@ option skeleton = {
         'suc_item': ('item',-1),
         'fail_cost': (('stat',-2),('stat',-1),),
         'fail_item': ('item',-1),
-        'stat_req': ('stat', value),
-        'item_req': None,
-        'skill_req': None,
+        'requirement': (type,key, value),
+        'requirement': None,
     },
 }
 
@@ -35,9 +34,7 @@ option example = {
         'suc_item': None,
         'fail_cost': (('stamina',-2),('stress',-1),),
         'fail_item': None,
-        'stat_req': None,
-        'item_req': None,
-        'skill_req': ('sneak',2),
+        'requirement': ('skill','sneak',2),
     },
 }
 For the example, the blurb_ids would be sh1menu, sh1success, and sh1fail
@@ -52,9 +49,7 @@ option_list = {
         'suc_item': None,
         'fail_cost': (('health',-1),('stress',-1),),
         'fail_item': None,
-        'stat_req': None,
-        'item_req': None,
-        'skill_req': None,
+        'requirement': None,
         
     },
     'sn1': {
@@ -65,9 +60,7 @@ option_list = {
         'suc_item': None,
         'fail_cost': (('stress',-2),('stamina',-1),),
         'fail_item': None,
-        'stat_req': None,
-        'item_req': None,
-        'skill_req': None,
+        'requirement': None,
     },
     'me1': {
         'attribute': 'mechanics',
@@ -77,9 +70,7 @@ option_list = {
         'suc_item': None,
         'fail_cost': (('stamina',-1),('stress',-1),),
         'fail_item': None,
-        'stat_req': None,
-        'item_req': None,
-        'skill_req': None,
+        'requirement': None,
     },
     'st1': {
         'attribute': 'stamina',
@@ -89,20 +80,16 @@ option_list = {
         'suc_item': None,
         'fail_cost': (('stamina',-2),),
         'fail_item': None,
-        'stat_req': None,
-        'item_req': None,
-        'skill_req': None,
+        'requirement': None,
     },
     'it1': {
         'attribute': 'item',
-        'item': None,
+        'item': 'Flashbang',
         'difficulty': 1,
         'suc_cost': None,
         'suc_item': ('Flashbang',1),
         'fail_cost': (('stress',-2),),
         'fail_item': ('Flashbang',1),
-        'stat_req': None,
-        'item_req': None,
-        'skill_req': None,
+        'requirement': None,
     },
 }

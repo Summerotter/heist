@@ -42,6 +42,21 @@ Entry 1:
 Entry 1:
 -Improved and polished XP Stat/Skill Increase menu. Good for Beta.
 -moved grabbing date and time to city.time_for_menu(), called by all appropriate print_menu() methods
+-created settings.py as designed in Roadmap 5 and 6
+-created text_blurbs.py for localization, objects given prefixes that are added to appropriate keys to get their event text
+-GameConfiguration class has get_text method. Passed a key when called, returned the proper text_blurbs.py string or the key.
+-moved all location descriptions to text_blurbs.py, each only gets one per timeframe (for now)
+
+2/11/2016:
+Entry 1:
+-added time_of_day method for city, returns obj.description keys for time-based descriptions
+-descriptions changed to 1 per timeframe, morning afternoon evening night
+-creating localization.py to move descriptions to
+-made Game class for loading/saving, don't know why I got so distracted. Currently disabled.
+-Implimented heist_storage.py for types and scene lists.
+-Implimented option_storage.py for storing scene options
+-Began integrating HeistDirector from Roadmap 5/6. Had to stop for night. Finished before touching run_heist.
+-loot table skeleton written.
 
 
 Roadmaps:
@@ -51,5 +66,5 @@ Roadmaps:
 -Roadmap 5: Heist System skeleton designed [DONE]
 -Roadmap 6: Heist System skeleton written [PARTIAL]
 -Roadmap 7: Heist System fleshed out, would need more fluff
--Roadmap 8: Saving and Loading System with SQLAlchemy(?), Main Menu instead straight to city.menu()
+-Roadmap 8: Saving and Loading System, Main Menu instead straight to city.menu() [Skeletoned]
 -Roadmap 9: Polish the UI

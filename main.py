@@ -7,6 +7,8 @@ Written in Python3.4.2, Windows Environ
 '''
 from random import randint
 
+
+
 class City:
     def __init__(self):
         self.max_time = 20
@@ -14,7 +16,7 @@ class City:
         self.total_days = 1
         self.current_day = 1
         self.weeks = 1
-        self.description =['City Description 1','City Description 2','City Description 3',]
+        self.prefix = "city_"
         
     def advance_day(self,penalty=0):
         '''called when ending a day at Hideout or Home, or by a Heist'''
@@ -29,6 +31,18 @@ class City:
             self.weeks += 1
             bank.deductions()
             '''market.refresh() here'''
+            
+    def time_of_day(self):
+        '''returns a string for time-based description key generation'''
+        '''Currently -1 to available time because 20 isn't in range(14,20) but in 14,21 and I want to keep the ranges somewhat sane'''
+        if self.available_time -1 in range(14,20):
+            return 'morning'
+        elif self.available_time -1 in range(9,14):
+            return 'afternoon'
+        elif self.available_time -1 in range(4,9):
+            return 'evening'
+        else:
+            return 'night'
             
     def time_for_menu(self):
         print("It is day",self.current_day," of week", str(self.weeks)+".")
@@ -45,7 +59,8 @@ class City:
             
     def menu(self):
         print()
-        desc = self.description[randint(0,len(self.description)-1)]
+        desc = config.get_text(self.prefix+city.time_of_day())
+        #results in city_morning, from prefix "city_" and time_of_day "morning"
         print(desc)
         print()
         while desc != '':
@@ -89,12 +104,12 @@ class City:
 class Bank:
     def __init__(self):
         '''starts with 600 cash, and a $ symbol'''
+        self.prefix = "bank_"
         self.account = 600
         self.symbol = "$"
         self.expense_list = {'ble':600,}
         self.expense_sum = 600
         #expenses is a dict, can add more in or remove them. Basic Living Expenses is 600.
-        self.description = ["This is the text description for the location. Perhaps make a list, rotate it between a few?",'Bank lol','Stilla bank',]
         self.fee = 15
         #The fee is for when you overdraft, and adds each time the deduction will result in a negative. Perhaps variable?
         self.transaction = False
@@ -177,7 +192,7 @@ class Bank:
             
     def menu(self):
         '''prints the menu. Options for withdrawl, deposit, viewing accounting sheet, and depart. On Exit, self.transaction set to False, and city.available_time -= 1 '''
-        desc = self.description[randint(0,len(self.description)-1)]
+        desc = config.get_text(self.prefix+city.time_of_day())
         print()
         print(desc)
             
@@ -205,8 +220,8 @@ class Bank:
 class Market:
     #single object for both Company Store and Black Market, since they're nearly the same thing.
     def __init__(self):
-        self.store_description = ["This is the text description for the location. Perhaps make a list, rotate it between a few?",'store2','store3',]
-        self.market_description = ["This is the text description for the location. Perhaps make a list, rotate it between a few?",'mar1','mar2',]
+        self.store_prefix = "store_"
+        self.market_prefix = "market_"
         self.store_stock = {'Medical Supplies': {'qty':1,'cost':5,},}
         self.market_stock = {'Medical Supplies': {'qty':1,'cost':8,'sale':3,},}
         #stock is the inventory dict that has items available, their price, and their quantity. Nested dicts. store_stock items do not change, market_stock does. Market has additional 'sale' cost as you can sell goods to it as a lower price.
@@ -284,10 +299,10 @@ class Market:
     def menu(self,market=True):
         print()
         if market:
-            desc = self.market_description[randint(0,len(self.market_description)-1)]
+            desc = config.get_text(self.market_prefix+city.time_of_day())
             stock = self.market_stock
         else:
-            desc = self.store_description[randint(0,len(self.store_description)-1)]
+            desc = config.get_text(self.store_prefix+city.time_of_day())
             stock = self.store_stock
         print(desc)
         while desc != '':
@@ -308,11 +323,11 @@ class Market:
             
 class Bar:
     def __init__(self):
-        self.description = ["This is the text description for the location. Perhaps make a list, rotate it between a few?",'bar2','bar3',]
         self.beer_price = 10
         self.beer_stress = 3
         self.event_interrupt = False
         self.so_stress = 1
+        self.prefix = "bar_"
         
         
     def buy_booze(self):
@@ -354,7 +369,7 @@ class Bar:
         print()
         
     def menu(self):
-        desc = self.description[randint(0,len(self.description)-1)]
+        desc = config.get_text(self.prefix+city.time_of_day())
         if city.available_time <= 0:
             print("The bar is closed. GO HOME!")
             city.menu()
@@ -380,6 +395,7 @@ class EventManager:
     def __init__(self):
         '''job table here temporarily. Will be moved to seperate events file at some point.'''
         '''then it would be self.job_event_table = imported thing from other file'''
+        prefix = "event_"
         self.job_event_table = {
         'job_1': {
             'text': "You seemed to understand mechanics better! +1 to your skill.",
@@ -500,7 +516,7 @@ class EventManager:
         
 class Job:
     def __init__(self):
-        self.description = ["Your workplace",'Shop as busy as ever','This tedious place again']
+        self.prefix = "job_"
         self.base_pay = 10.00
         self.can_work = True
         self.event_string = ''
@@ -557,7 +573,7 @@ class Job:
         print()
         
     def menu(self):
-        desc = self.description[randint(0,len(self.description)-1)]
+        desc = config.get_text(self.prefix+city.time_of_day())
         if city.available_time >= 10:
             self.hours = 10
         else:
@@ -591,7 +607,7 @@ class Job:
         
 class Home:
     def __init__(self):
-        self.description = ["This is your home", 'This is the castle', 'This is where you and your so live',]
+        self.prefix = "home_"
         self.base_stamina_restoration = 1
         self.base_stress_restoration = 1
         self.bonus_stam = 0
@@ -631,7 +647,7 @@ class Home:
         #kicks you back to hideout.menu()
         
     def print_menu(self):
-        
+ 
         city.time_for_menu()
         print()
         print(" 'A'dd Upgrade | 'U'ninstall Upgrade ")
@@ -640,7 +656,7 @@ class Home:
         
         
     def menu(self):
-        desc = self.description[randint(0,len(self.description)-1)]
+        desc = config.get_text(self.prefix+city.time_of_day())
         print()
         print(desc)
         while desc != '':
@@ -663,7 +679,7 @@ class Home:
         
 class Hideout:
     def __init__(self):
-        self.description = ['hideout_1','hideout_2']
+        self.prefix = "hide_"
         self.base_stamina_restoration = 1
         self.base_health_restoration = 1
         self.upgrades = {}
@@ -773,7 +789,7 @@ class Hideout:
         print()
         
     def menu(self):
-        desc = self.description[randint(0,len(self.description)-1)]
+        desc = config.get_text(self.prefix+city.time_of_day())
         print()
         print(desc)
         while desc != '':
@@ -867,9 +883,8 @@ class Character:
             }
         
         #stats and skills
-        #roll penalty used by stat system
         
-        #keeps track of 
+        self.xp_stage = 0
         
         self.cash_on_hand = 0
         self.total_xp = 0
@@ -908,7 +923,19 @@ class Character:
     def add_xp(self, xp):
         '''used by events or whatever to add xp to the character.'''
         self.total_xp += xp
-        self.available_xp = xp
+        self.available_xp += xp
+        self.xp_stage_check()
+        
+    def xp_stage_check(self):
+        xp = self.total_xp -1
+        if xp in range(0,20):
+            self.xp_stage = 0
+        elif xp in range(21,40):
+            self.xp_stage = 1
+        elif xp in range(41,60):
+            self.xp_stage = 2
+        else:
+            self.xp_stage = 3
         
     def raise_skill(self,skill):
         run_menu = True
@@ -973,9 +1000,289 @@ class Character:
 ##Failure is a -1 Health and/or -1 Stamina and/or +1 Stress and/or losing Loot gained thus far on the Heist.
 ##End of Heist is +1XP and tally's up total.
 ##Heists use up 15 hours flat. If character has 15 or few hours left it automatically ends the day with no rest. If this ends up being a large deficiet, hours available the next day will go down.
-        
 
+
+##---Heist System Begin ---##
+class Director:
+    def __init__(self):
+        
+        import heist_storage
+        self.scene_data = heist_storage.scene_data_list
+        self.scene_types = heist_storage.scene_type_list
+        
+        
+        self.possible_heists = {}
+        #dict with heists when chosing from menu
+        
+        self.results = {}
+        #displays results of heist
+        self.run_menu = True
+        
+        self.loot_table = {
+            'loot': {
+                '1':0,
+                '2':0,
+                '3':0,
+                '4':0,
+                '5':0,
+            },
+            'cash': {
+                '1':0,
+                '2':0,
+                '3':0,
+                '4':0,
+                '5':0,
+            },
+            'item': {
+                '1':0,
+                '2':0,
+                '3':0,
+                '4':0,
+                '5':0,
+            }
+        }
+        
+    def generate_heist_options(self):
+        '''clears out possible_heists and generates new ones'''
+        self.possible_heists = {}
+        #clears any prior heists.
+        for heist in range(config.heist_count):
+            self.possible_heists[len(self.possible_heists)+1] = self.heist_generator()
+            #first would be possible_heists[1], etc.
+            
+    def heist_generator(self):
+        '''generates data for to choose heists'''
+        heist = {}
+        
+        '''get difficulty and scene count'''
+        heist['difficulty'] = character.xp_stage + randint(-2,2)
+        if heist['difficulty'] >= 4:
+            heist['difficulty'] = 4
+            heist['scene_count'] = config.scene_max
+        elif heist['difficulty'] <= 0:
+            heist['difficulty'] = 0
+            heist['scene_count'] = game.config.scene_min
+        else:
+            heist['scene_count'] = randint(config.scene_min,config.scene_max)
+            
+            
+        '''get type and blurb_id'''
+        heist['type'] = self.scene_types[randint(0,len(scene_types)-1)]
+        type_data = self.scene_types[type_key]
+        heist['blurb_id'] = type_data[0]+str(randint(1,type_data[1]))
+#        heist_foe = foes[type][randint(0,len(foes[type])-1)]
+        
+        heist['scene_list'] = []
+        scenes_of_type = list(self.scene_data[type].keys())
+        for scene in heist['scene_count']:
+            heist['scene_list'].append(scenes_of_type[randint(0,len(scenes_of_type)-1)])
+               
+        
+        heist['hours_cost'] = randint(config.scene_min_time_roll,config.scene_max_time_roll)+(config.scene_time_mod_per_scene*scene_count) 
+        #defaults to 2-8 + 2 per scene, min 5, max 18.
+        #variable. Needs work. Uses configs. Subtracts total from time_available when  heist ends
+        
+        #heist has 'difficulty', 'scene_count', 'type', 'blurb_id', 'scene_list'(list), and 'hours_cost'
+        #stored by director and formatted for menu, and passed to run_heist()
+        return heist
+        
+            
+    def run_heist(self, heist):
+        self.results = {}
+        #clearing prior heists
+        self.scene_list = heist['scenes']
+        for key in self.scene_list:
+            scene = Scene(key,data)
+            scene.menu()
+        '''results and tally'''
+        self.run_menu = False
+        city.available_time -= heist['hours_cost']
+        if city.available_time == 0:
+            hideout.end_day()
+        elif city.available_time < 0:
+            hideout.end_day_penalty()
+            ##you've got 20 hours in the day available; if you do anything in the morning and then heist you'll be back the next day instead.
+            ##do not gain any health or stamina regen when this occurs.
+        else:
+            hideout.menu()
+            
+    def print_menu(self):
+        '''Lists Heist options and back to Hideout'''
+    
+    def menu(self):
+        '''self.run_menu = True'''
+        '''print planner blurb from hideout'''
+        '''print_menu()'''
+        '''while self.run_menu:'''
+        '''if choice == run_a_heist'''
+        '''tab--self.run_heist(heist)'''
+        #run_heist will directly back to the hideout.
+
+class Scene:
+    '''A hiest is comprised of multiple Scenes'''
+    def __init__(self,type,scene_id,heist_data):
+        self.scene_id
+        self.scene_data = scene_data_storage[scene_id]
+        self.options = {}
+        self.options['s'] = self.scene.option_dict['shoot'][randint(0,len(self.scene.option_dict['shoot'])-1)]
+        self.options['s']['difficulty'] += heist_data.difficulty
+        
+        '''if there are requirements for option, check them here. Discard if not meeting requirements'''
+        '''Requirements can be skill or stat thresholds, or items in inventory'''
+        '''might drop those out for now. Rewrite character stats to be a dict for ease of access?'''
+        '''like, if requires_item elif requires_stat, can check directly by character.stats[requirement] >= Threshold '''
+        
+        '''check inventory for items that trigger options, adds here. Grenades, flashbangs''' 
+        '''Format strings for self.scene_data for flavoring and foe.'''
+        '''Format strings for self.options[all] for flavoring, foe, and final difficulty'''
+        '''self.choice_list = {} / for option in self.options: self.choice_list[len(self.choice_list)]= (option, self.options['blurb'])'''
+        
+    def print_menu():
+        '''prints option strings and option_choice_list for them'''
+        '''for choice in self.choice_list: / print(choice,choice_list[choice][2])'''
+        '''the above would be formatted nicer, yeah.'''
+        
+    def menu():
+        print(self.scene_data['start_blurb'])
+        run_menu = True
+        print()
+        while run_menu:
+            self.print_menu()
+            choice = input("Make your decision")
+            '''format choice so it matches properly'''
+            if choice in self.choice_list:
+                results = test(self.options[choice])
+                if results['pass']:
+                    print(self.scene_data['success_blurb'])
+                    run_menu = False
+                    director.results[self.scene_id] = results
+                    #should collapse back to director control
+                else:
+                    print(self.scene_data['fail_blurb'])
+                    run_menu = False
+                    director.results[self.scene_id] = results
+                    #should collapse back to director control
+            else:
+                print("That isn't an option here!")
+        
+    def test(option_data):
+        '''unpack option data'''
+        results = {}
+        if option_stat + randint(1,10) - character.total_penalties + character.total_mods >= randint(1,5) + total_difficulty:
+            results['pass'] = True
+            results['reward'] = grant_reward(data)
+            '''stat or item adjustsments made as per option_success_cost, added to results dict'''
+        else:
+            results['pass'] = False
+            '''stat or item adjustsments made as per option_success_cost, added to results dict'''
+        return results
+            
+        
+    def grant_reward(data):
+        '''grabs reward per data'''
+        '''satchet system or table rolls, see below'''
+        '''returns result as tupple'''
+        return (loot, cash, item)
+        #note: Above defaults to None if None
+
+##---Heist System End ---##
+
+##---Loading Game Objects ---##
+class Game:
+    '''NOT IMPLIMENTED'''
+    def __init__(self):
+        self.loaded = False
+        from settings import GameConfiguration
+        self.config = GameConfiguration()
+        self.save_list = {"a": None, "b":None, "c":None, "d":None,}
+        '''grab the save file master info here'''
+        '''key = name, date last played, in-game date, earned xp, total wealth, filename'''
+        
+        
+    def start_game(self):
+        self.city = City()
+        self.bank = Bank()
+        self.market = Market()
+        self.bar = Bar()
+        self.home = Home()
+        self.hideout = Hideout()
+        self.character = Character()
+        self.event_manager = EventManager()
+        
+    def print_main_menu(self):
+        '''lists the options for the main menu'''
+        print("Howdy! 'r' to run the game, 's' to save it, 'l' to load from save, and 'q' to quit")
+
+    def main_menu(self):
+        '''out of game menu for loading, saving, starting new game'''
+        run_menu = True
+        while run_menu:
+            self.print_main_menu()
+            choice = input("Well, what'll it be: ").lower()
+            if choice == 'q':
+                run_menu = False
+                print("Goodbye!")
+            elif choice == 'r' and self.loaded:
+                print("Entering active game")
+                run_menu = False
+                self.city.menu()
+            elif choice == 'r' and not self.loaded:
+                print("Starting a new game")
+                run_menu = False
+                self.loaded = True
+                self.city.menu()
+            elif choice == 's':
+                self.save_menu()
+            elif choice == 'l':
+                self.load_menu()
+            else:
+                print("Not a valid option")
+                
+    def print_save_load_menu(self):
+        '''formats and makes pretty the info in self.save_life'''
+        
+    def overwrite_prot(self):
+        print("Warning, may overwrite save.")
+        option = input("Enter 'y' to overwrite: ").lower()
+        if option == 'y':
+            print("Overwriting")
+            return True
+        else:
+            print("Cancelling")
+            return False
+        
+    def save_menu(self):
+        save_menu = True
+        go = True
+        while save_menu:
+            self.print_save_load_menu()
+            option = input("Make your choice: ").lower()
+            if option == 'x':
+                save_menu = False
+            elif option in self.save_list:
+                if self.save_list[option] != None:
+                    go = self.overwrite_prot()
+                if go:
+                    self.save_game(option)
+                else:
+                    print("Saving canceled, returning to menu")
                     
+    def save_game(self,option):
+        '''this will set self.save_list[option] to the right info, then pickle the game object to the pointed file.'''
+        
+    def load_game(self,option):
+        '''gets the filename from self.save_list[option], pickle loads it and sets game = loaded_game, and self.loaded to True'''
+        
+    def load_menu(self):
+        '''load version of save game, includes check if self.loaded is true for overwriting loaded games'''
+                        
+                        
+
+
+#game = Game()
+    
+from settings import GameConfiguration
+config = GameConfiguration()                    
 city = City()
 bank = Bank()
 market = Market()
@@ -985,6 +1292,14 @@ home = Home()
 hideout = Hideout()
 character = Character()
 event_manager = EventManager()
+
+
+
+##---End Loading Game Objects ---##
+
+
+    
                     
 if __name__ == '__main__':
     city.menu()
+    #game.main_menu()

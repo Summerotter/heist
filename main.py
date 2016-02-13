@@ -12,7 +12,20 @@ def pause_x():
     x = input("Press Enter to continue...")
     print()
 
-
+def intro():
+    print(config.get_text("intro1"))
+    x=input("...")
+    print(config.get_text("intro2"))
+    x=input("...")
+    print(config.get_text("intro3"))
+    x=input("...")
+    print(config.get_text("intro4"))
+    x=input("...")
+    print(config.get_text("title"))
+    x=input("...")
+    print(config.get_text("title2"))
+    x=input("Enter the Game")
+    
 class City:
     def __init__(self):
         self.max_time = 20
@@ -21,6 +34,7 @@ class City:
         self.current_day = 1
         self.weeks = 1
         self.prefix = "city_"
+        
         
     def advance_day(self,penalty=0):
         '''called when ending a day at Hideout or Home, or by a Heist'''
@@ -224,90 +238,217 @@ class Bank:
 class Market:
     #single object for both Company Store and Black Market, since they're nearly the same thing.
     def __init__(self):
+        '''imports white and black from items.py for internal item list
+        actual stock in store_stock and market_stock
+        initialized as empty dicts, refresh method fixes that.
+        '''
+        import items
+        self.store_items = items.white
+        self.market_items = items.black
         self.store_prefix = "store_"
         self.market_prefix = "market_"
-        self.store_stock = {'Medical Supplies': {'qty':1,'cost':5,},}
-        self.market_stock = {'Medical Supplies': {'qty':1,'cost':8,'sale':3,},}
-        #stock is the inventory dict that has items available, their price, and their quantity. Nested dicts. store_stock items do not change, market_stock does. Market has additional 'sale' cost as you can sell goods to it as a lower price.
-        self.market_items = {}
-        #full list of Black Market.
-        self.store_keys = list(self.store_stock.keys())
+        self.market_stock = {'keys':{}}
+        self.store_stock = {'keys':{}}
+        self.store_keys = list(self.store_items.keys())
         self.market_keys = list(self.market_items.keys())
+        self.market_price_mod = config.market_cost
+        self.market_sale_mod = config.market_sale
         self.transaction = False
         
+        self.refresh()
+        
     def refresh(self):
-        for item in self.store_stock:
-            qty = randint(1,4)
-            self.store_stock[item]['qty'] = qty
-        #The Company Store's offerings never change.
+        '''loads up a new week's worth of stock for both markets.'''
         
+        #Company Store
+        self.store_stock = {'keys':{}}
+        #clearing out old data
+        
+        for item in self.store_keys:
+            qty = randint(-1,3)
+            if self.store_items[item]['qty']+qty > 0:
+                self.store_stock[item] = self.store_items[item]
+                self.store_stock[item]['qty'] = qty
+                self.store_stock['keys'][len(self.store_stock['keys'] ) +1] = item
+        #The Company Store always carries same good, but might be out, no need to list them.
+        #Keys value is tupple menu_option,item_key. 
+
+        #Black Market
         self.market_stock = {
-        'Identity Papers':{'qty':1,'cost':100000,'sale':0,},
-        'Loot':{'qty':0,'cost':100,'sale':25,},
+        'papers':{'qty':1,'cost':100000,'value':1,'sale':0,'key':'papers',},
+        'keys':{},
         }
-        #every week the Black Market offers new items, except Loot and Identity Papers are always available.
-        store_options = randint(1,4) + len(self.market_stock)
-        while len(self.market_stock) < store_options:
-            item = self.store_keys[randint(0,len(self.store_keys)-1)]
-            if not item in self.market_stock:
-                qty = randint(1,3)
-                cost = self.store_stock[item]['cost']
-                market_cost = cost*1.5
-                sale_cost = cost*.5
-                self.market_stock[item] = {'qty':qty,'cost':cost,'sale':sale_cost}
-        #Randomly gets 1-4 items from the Company Store list. Maybe 0-3?
+        #Black market also resets, but keeps 'papers', win condition item, and 'loot', special sale item.
+        self.blackmarket_refresh(self.store_keys,self.store_items)
+        self.blackmarket_refresh(self.market_keys,self.market_items,store=False)
+        self.market_stock['keys'][len( self.market_stock['keys'] ) +1] = 'papers'
         
-        store_options = randint(1,4) + len(self.market_stock)
-        while len(self.market_stock) < store_options:
-            item = self.market_keys[randint(0,len(self.market_keys)-1)]
-            if not item in self.market_stock:
-                qty = randint(1,2)
-                self.market_stock[item] = self.market_items[item]
-                self.market_stock[item]['qty'] = qty
-        #randomly selects 1-4 items from the Black Market list, adds 1-2 of them to the stock.
+    def blackmarket_refresh(self,keys,items,store=True):
+        '''handles adding items for the black market, called twice'''
+        if store:
+            qty = (1,2)
+            count = (2,3)
+            price_mod = self.market_price_mod
+        else:
+            qty = (0,1)
+            count = (3,4) 
+            price_mod = 1
+        for item in range(randint(count[0],count[1])):
+            item_key = keys[randint(0,len(keys)-1)]
+            if items[item_key]['value'] > 0:
+                if not item_key in self.market_stock:
+                    self.market_stock['keys'][len( self.market_stock['keys'] ) +1] = item_key
+                    self.market_stock[item_key] = items[item_key]
+                    self.market_stock[item_key]['qty'] += randint(qty[0],qty[1])
+                    self.market_stock[item_key]['cost'] = round(price_mod * self.market_stock[item_key]['cost'])
+                else:
+                    self.market_stock[item_key]['qty'] += 1
+                    #if it rolls the same item twice, gets an extra
+                    
+   
+                    
+    def remove_item(self,stock,item):
+        '''checks if its market or store by loking for papers
+        then reduces the qty by 1
+        '''
+        if 'papers' in stock:
+            self.market_stock[item]['qty'] -= 1
+        else:
+            self.store_stock[item]['qty'] -= 1
         
     def buy(self, stock, item):
         '''removes cash-on-hand from character, adds item to inventory and removes from stock'''
-        self.transaction = True
+        print("Item: ", item)
+        if stock[item]['qty'] < 1:
+            print("They're out of this item.")
+        elif character.cash_on_hand >= stock[item]['cost']:
+            print("This item costs $"+str(stock[item]['cost'])+", and you have $"+str(character.cash_on_hand))
+            choice = input("Enter 'y' to confirm purchase: ").lower()
+            if choice == 'y':
+                character.add_item(item,stock[item])
+                character.cash_on_hand -= stock[item]['cost']
+                if 'papers' in stock:
+                    print(self.market_stock[item]['qty'])
+                    self.market_stock[item]['qty'] -= 1
+                    print(self.market_stock[item]['qty'])
+                else:
+                    self.store_stock[item]['qty'] -= 1
+                    
+                self.transaction = True
+            else:
+                print("You can come back later.")
+        else:
+            print("You stare longingly at the "+stock[item]['key']+", but you can't afford it right now.")
+            x = input("Hit Enter to Continue")
+
             
-    def sell(self, item, loot=False):
+    def sell(self, item):
         '''gives character chas on hand, removes item from inventory, places in market stock. ONly for black market'''
-        '''if loot=True from menu, it autounloads all loot in inventory in one go'''
         self.transaction = True
-            
+        print(item)
+        if item[0] == 'loot':
+            character.inventory['loot'] = 0
+            character.cash_on_hand += item[1]*item[2]
+            print("You just sold",item[1],"pieces of loot for $"+str(item[1]*item[2])+"!")
+            print()
+            x = input("Enter to continue.")
+            print()
+        else:
+            character.remove_item(item[0])
+            character.cash_on_hand += item[2]
+            print("You just sold a",item[0],"for $"+str(item[2])+"!")
+            print()
+            x = input("Enter to continue.")
+            print()
 
         
     def print_menu(self,market=True):
-        
+        '''on exit, if self.transaction == True, set to False, city.time_available -= 1'''
         city.time_for_menu()
         print()
         if market:
             '''prints market specific menu'''
             print("This is the Black Market Menu!")
-            print("Will be able to buy or sell things here!")
-            print("Nothing to do here but e[x]it out to the city.")
+            print("You can see what you can [b]uy, and what you can [s]ell.")
         else:
             '''prints store specific menu'''
             print("This is the Company Store Menu!")
-            print("Can buy stuff but out of stock")
-            print("Nothing to do here yet but e[x]it out to the city.")
-                
-            '''on exit, if self.transaction == True, set to False, city.time_available -= 1'''
+            print("You can check out what goods we have to [b]uy.")
+        print("Or e[x]it out to the city.")
+            
                 
     def buy_menu(self,stock):
-        '''lists all the stock options for purchasing'''
+        run_menu = True
+        while run_menu:
+            self.print_buy_menu(stock)
             
-    def sell_menu(self,stock):
-        '''lists inventory items and price earned from them.'''
+            choice = input("What are ya buying? ")
+            if config.is_int(choice):
+                choice = int(choice)
+            if str(choice).lower() == "x":
+                run_menu = False
+            elif choice in stock['keys']:
+                self.buy(stock,stock['keys'][choice])
+            else:
+                print("didn't catch that.")
+        '''lists all the stock options for purchasing'''
+        
+    def print_buy_menu(self,stock):
+        for i in range(1,len(stock['keys'])+1):
+            if i in stock['keys']:
+                item = stock[stock['keys'][i]]
+                print(str(i)+":",item['key']+":"+str(item['value']), "Cost: $"+str(item['cost'])," ",item['qty'],"available."  )
+        print("Or 'x' to back out of this menu")
+            
+    def sell_menu(self):
+        items = {}
+        for item in character.inventory:
+            if item in self.market_items and character.inventory[item] > 0: 
+                items[len(items)+1]= (item,character.inventory[item],self.market_items[item]['sell'])
+            elif item in self.store_items and character.inventory[item] > 0:
+                items[len(items)+1]= (item,character.inventory[item],self.store_items[item]['sell'])
+            elif item == 'loot' and character.inventory['loot'] > 0:
+                items[len(items)+1]= (item,character.inventory[item],character.loot_value)
+        run_menu = True
+        while run_menu:
+            if len(items) == 0:
+                print("You don't have anything for sale!")
+                run_menu = False
+            self.print_sell_menu(items)
+            choice = input("What is your choice: ").lower()
+            if config.is_int(choice):
+                choice = int(choice)
+            if choice == 'x':
+                run_menu = False
+            elif choice in items:
+                run_menu = False
+                self.sell(items[choice])
+            else:
+                print("Did not get a valid option")
+                
+                
+    def print_sell_menu(self,items):
+        
+        print()
+        for i in range(len(items)+1):
+            if i in items:
+                print(i, "Item: ",items[i][0], "Qty: ",items[i][1], "Sale Price: ",items[i][2])
+        print("And 'x' to leave this menu.")
+        print()
+        
+        
+    
         
     def menu(self,market=True):
         print()
         if market:
             desc = config.get_text(self.market_prefix+city.time_of_day())
             stock = self.market_stock
+            keys = self.market_keys
         else:
             desc = config.get_text(self.store_prefix+city.time_of_day())
             stock = self.store_stock
+            keys = self.store_keys
         print(desc)
         while desc != '':
             self.print_menu(market)
@@ -316,11 +457,18 @@ class Market:
                 desc = ''
                 city.menu()
             elif choice == 's' and market:
-                print("This is here just for code demo, sorry!")
-                '''self.sell_menu(stock)'''
+                self.sell_menu()
             elif choice == 'b':
-                print("Just more code demo, sorry!")
-                '''self.buy_menu(stock)'''
+                print("You begin to brows some wares.")
+                self.buy_menu(stock)
+            elif choice == "rich":
+                character.cash_on_hand += 1000000
+                print("And you've now got a million dollars!")
+                x = input("Enter to continue")
+            elif choice == "looty":
+                character.inventory['loot'] = 100
+                print("And some Heinikan")
+                x = input("enter to continue")
             else:
                 print("Didn't recognize that option")
                 
@@ -651,15 +799,39 @@ class Home:
         #kicks you back to hideout.menu()
         
     def print_menu(self):
- 
+            
         city.time_for_menu()
         print()
         print(" 'A'dd Upgrade | 'U'ninstall Upgrade ")
         print(" 'R'est        |  'L'eave ")
         print()
         
+    def win(self):
+        print(config.get_text('win1'))
+        x = input("...")
+        print(config.get_text('win2'))
+        x = input("...")
+        print(config.get_text('win3'))
+        x = input("...")
+        print(config.get_text('intro1'))
+        x = input("...")
+        print(config.get_text('win4'))
+        x = input("...")
+        print(config.get_text('win5'))
+        x = input("...")
+        print(config.get_text('win6'))
+        x = input("...")
+        print(config.get_text('title'))
+        x = input("...")
+        print(config.get_text('title2'))
+        x = input("Press Enter to End")
+        
         
     def menu(self):
+        if character.inventory['papers'] >0:
+            self.win()
+            return "Thank you for playing!"
+            break
         desc = config.get_text(self.prefix+city.time_of_day())
         print()
         print(desc)
@@ -788,12 +960,14 @@ class Hideout:
         city.time_for_menu()
         print()
         print(" You can look in the 'M'irror")
+        print(" Your 'I'nventory is messy right now")
         print(" 'T'rain | 'P'lan Heist ")
         print(" 'A'dd or 'U'ninstall Upgrade")
         print(" 'R'est  | 'L'eave Hideout")
         print()
         
     def menu(self):
+        
         desc = config.get_text(self.prefix+city.time_of_day())
         print()
         print(desc)
@@ -819,6 +993,8 @@ class Hideout:
                 self.add_upgrade()
             elif choice == 'u':
                 self.remove_upgrade()
+            elif choice == 'i':
+                character.print_inventory()
             else:
                 print("Not a valid option")
                 print()
@@ -896,10 +1072,11 @@ class Character:
         self.total_xp = 0
         self.available_xp = 0
         #xp and cash, obv. total xp is all XP ever owned, available xp is what can be spent
-        
-        self.inventory = {'loot': {'qty':0,'value':0,},}
+        self.loot_value = 25
+        #base price for loot, maybe it'll go up?
+        self.inventory = {'loot': 0,}
         #inventory is all the items non-equipped that the character owns.
-        #itemid: quantity, quality.
+        #itemid: quantity
         
         
        
@@ -914,6 +1091,7 @@ class Character:
             self.stats[stat]['penalty'] = 0
         if self.stats[stat]['current'] < 0:
             self.stats[stat]['current'] = 0
+            
             
     def update_skill(self,skill):
         '''updating modifier when leveling up or changing equipment'''
@@ -975,13 +1153,34 @@ class Character:
     def has_item(self, key, value=1):
         if not key in self.inventory:
             return False
-        elif self.inventory[key] < value:
+        elif self.inventory[key]['qty'] < value:
             return False
         else:
             return True
 
         
-        
+    def add_item(self,key,data):
+        '''called by market when an item is purchased'''
+        '''No need to copy the entire item over, lets see if that helps'''
+        if not key in self.inventory:
+            self.inventory[key] = 1
+        elif key in self.inventory:
+            self.inventory[key] += 1
+            
+    def remove_item(self,key,qty=1):
+        if not key in self.inventory:
+            '''okay, its already gone.'''
+        elif key in self.inventory:
+            if self.inventory[key] > qty:
+                self.inventory[key] -= qty
+                # Assumes that whatever calls remove_item would check if there's enough for their qty.
+            elif key != 'loot':
+                del self.inventory[key]
+            
+    def print_inventory(self):
+        '''displays inventory'''
+        for item in self.inventory:
+            print(item,self.inventory[item])
             
     def mirror(self):
         '''displays stats, called by any mirror object'''
@@ -1006,18 +1205,9 @@ class Character:
         print("Not a bad looking person!")
         print()
         x = input("Hit Enter to continue")
-            
+
+
         
-##Still need to flesh out Heists. Difficulty of 0-4, "Simple, Easy, Tough, Challenging, Impossible". 25/50/75/100/200 cash-of-loot per stage. 
-##Lower difficult weighted towards 3 stages, higher towards 5. 
-##Events will have 4 options, versus Shoot, Sneak, Mechanics, and Stamina. Some options may have a requirement threshhold. Each Event should have at least one attemptable option.
-##Character Test is 1d10 + Skill - Stress_Penalty - Wounded_Penalty - Exhaustion_Penalty, versus Option Difficulty + 1d5 + Heist_Difficulty_Modifier[0-4]
-##Success is 1XP, plus Reward_Roll of 1d10+Option Difficulty of an Item or Loot[generate cachet list?], value modified by Heist Difficulty.
-##Failure is a -1 Health and/or -1 Stamina and/or +1 Stress and/or losing Loot gained thus far on the Heist.
-##End of Heist is +1XP and tally's up total.
-##Heists use up 15 hours flat. If character has 15 or few hours left it automatically ends the day with no rest. If this ends up being a large deficiet, hours available the next day will go down.
-
-
 ##---Heist System Begin ---##
 class Director:
     def __init__(self):
@@ -1033,6 +1223,7 @@ class Director:
         self.possible_heists = {}
         #dict with heists when chosing from menu
         
+        self.xp = config.minimum_heist_xp
         self.results = {}
         #displays results of heist
         self.run_menu = True
@@ -1108,7 +1299,8 @@ class Director:
             
     def run_heist(self, heist):
         self.results = {}
-        #clearing prior heists
+        self.xp = config.minimum_heist_xp
+        #clearing prior heists, adding initial value for XP
         self.scene_list = heist['scene_list']
         for key in self.scene_list:
             print()
@@ -1139,7 +1331,9 @@ class Director:
                 character.inventory[item[0]]['qty'] += item[1]
             else:
                 character.inventory[item[0]] = {'qty':item[1],'value':item[2]}
+        character.add_xp(self.xp)
         print("Here's the results of your run:")
+        print("You gained",self.xp,"experience points.")
         print("You earned "+bank.symbol+str(self.results['cash'])+", and "+str(self.results['loot'])+" pieces of loot!")
         if self.results['items']:
             print("You also earned ",self.results['items'])
@@ -1262,6 +1456,7 @@ class Scene:
                 if results[0]:
                     print(config.get_text(self.options[choice]['id']+"success"))
                     print(config.get_text(self.scene_id+"success"))
+                    director.xp += 1
                     run_menu = False
                     director.results[str(len(director.results))] = (self.scene_id,results)
                     #should collapse back to director control
@@ -1278,11 +1473,27 @@ class Scene:
         
     def test(self,id,data):
         '''unpack option data'''
-        results = {}
         if data['versus'] + randint(1,10) >= randint(1,5) + data['difficulty']:
-            return (True, self.grant_reward(data['difficulty']))
+            stat_cost = data['suc_cost']
+            item_cost = data['suc_item']
+            if stat_cost != None:
+                for each in stat_cost:
+                    self.character.stats[each[0]] += each[1]
+                    character.update_stat(each[0])
+            if item_cost != None:
+                for item in item_cost:
+                    character.inventory[item[0]]['qty'] - item[1]
+            return (True, self.grant_reward(data['difficulty']),stat_cost,item_cost)
         else:
-            return (False, (0,0,0))
+            stat_cost = data['fail_cost']
+            item_cost = data['fail_item']
+            for each in stat_cost:
+                character.stats[each[0]] += each[1]
+                character.update_stat(each[0])
+            if item_cost != None:
+                for item in item_cost:
+                    character.inventory[item[0]]['qty'] - item[1]
+            return (False, (0,0,0),stat_cost,item_cost)
             
         
     def grant_reward(self,data):
@@ -1300,7 +1511,9 @@ class Scene:
         return (temp['loot'], temp['cash'], temp['item'])
         #note: Above defaults to None if None
 
-##---Heist System End ---##
+##---Heist System End ---##            
+        
+
 
 ##---Loading Game Objects ---##
 class Game:
@@ -1417,6 +1630,8 @@ director = Director()
     
                     
 if __name__ == '__main__':
-    #city.menu()
+    intro()
+    city.menu()
     #game.main_menu()
-    director.menu()
+    #market.menu()
+    

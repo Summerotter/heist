@@ -100,5 +100,21 @@ text = { 'text_key': {'eng' : 'this is the full text, in english', 'spa' : "no h
          'd2': {'eng': "Guards down at the docks are tense. They're hiding something good."},
          'd3': {'eng': "One of your rivals got his ticket punched. His hideout was down at the docks..."},
          
+         #win
+         'win1': {'eng': '''With the new identity papers in hand, you have arrived home with a light heart and a joy you've not felt in a long while. You see your SO standing in the kitchen, and you pounce them happily, holding them tightly. They let out a soft sound of surprise as you stand there, just holding them.''',},
+         'win2': {'eng': '''Eventually your SO speaks, 'What's going on hun? Did something happen?" You just nod, and show them the papers. They stand there speechless. "I managed to buy these," you say. "And they're pretty legitimate. You, me. A new life away from here. We'd still have to work, but... not here. Just us."''',},
+         'win3': {'eng': '''Your SO nods, and you hold each other tightly again.''',},
+         'win4': {'eng': '''It is here that you lived, and here that you fell in love. It is here that you thought you would end your days, but now one of those very airships you once labored to fix just to stay afload is now taking you away. To a better life. ''',},
+         'win5': {'eng': '''             The End''',},
+         'win6': {'eng': '''             Thank you for playing.''',},
+         
+         #intro
+         'intro1': {'eng': '''This is the Capitol of the Empire. Tall towers stand arrogantly, reaching for the clear sky, a thick miasmic cloud at their base, the noxious fumes of the industry that powers the wealth, opulance, and decadance of the upper class choking those that support them. The great towers and builds abound with airdocks, and the great zepplines and airships criss-cross through the air.''',},
+         'intro2': {'eng': '''It is here that you live, and is here that you know you will end your days, laboring in an Imperial airship repair shop, earning just enough in your 60 hours of work a week to pay your bills, dreaming without hope of a life in a better place. ''',},
+         'intro3': {'eng': '''But a curious event has happened that will change your destiny: You have fallen in love, and they have fallen in love with you as well. Your SO also has dreams of living life in a beter place, but earns not much more than you do working as a bartender - although with you, they say they have found a better place.''',},
+         'intro4': {'eng': '''But you want better for your SO - better for both of you. And so, taking up a dangerous offer, you have begun practicing with your guns, improving your enginering, and developing your sneaking. There's wealth out there for the taking, young SteamRunner, and with it a better future for you both.''',},
+         'title': {'eng': "SteamRunner",},
+         'title2': {'eng': "Designed and Developed by Henry J. Thiel",},
+         
 }
         

@@ -63,6 +63,17 @@ Entry 1:
 -Heist sysem mostly integrated skeleton integrated. Missing stat and treasure modifications. Also no formatting.
 -loot addition now happening, slightly better formatting for things.
 
+Entry 2:
+-Finally made a second entry in the same day.
+-Added stat and item cost to Scene.test method
+-Altered settings.py GameConfiguration.get_text method to add language fallback.
+-Director.xp for xp tracking and granting all at once. Consider moving to loot table and reward system
+-Heist system feature complete, if unpolished and needing content. Roadmap 7 completed.
+-Started work overhauling market and item systems
+-Item data moved to items.py
+-buy system written, add_item and remove_item written for player
+-I have no clue what was going on but player inventory now just {item_key:item_quantity} and that fixed it.
+
 
 Alpha Roadmaps:
 -Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]
@@ -70,7 +81,7 @@ Alpha Roadmaps:
 -Roadmap 4: Market and Items, Bar, End Of Game/Victory (Purchased papers) [Bar Done, no others yet]
 -Roadmap 5: Heist System skeleton designed [DONE]
 -Roadmap 6: Heist System skeleton written [DONE]
--Roadmap 7: Heist System fully implemented [Working on it]
+-Roadmap 7: Heist System fully implemented [Complete/Beta, needs polish]
 -Roadmap 8: Saving and Loading System, Main Menu instead straight to city.menu() [Skeletoned, Game class should be ready to go.]
 
 Beta Roadmaps

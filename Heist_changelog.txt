@@ -73,6 +73,7 @@ Entry 2:
 -Item data moved to items.py
 -buy system written, add_item and remove_item written for player
 -I have no clue what was going on but player inventory now just {item_key:item_quantity} and that fixed it.
+-Buy/Sell implimented. Win conditoin implimented. LATE ALPHA.
 
 
 Alpha Roadmaps:

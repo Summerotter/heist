@@ -831,7 +831,7 @@ class Home:
         if character.inventory['papers'] >0:
             self.win()
             return "Thank you for playing!"
-            break
+            
         desc = config.get_text(self.prefix+city.time_of_day())
         print()
         print(desc)

@@ -83,6 +83,11 @@ Entry 1:
 -Game class operational. Plays intro on new game.
 -Save system started. Stopping for now.
 
+2/14/2016:
+Entry 1:
+-saving needs completion.
+-saving and loading vaguely tested passing.
+
 
 Alpha Roadmaps:
 -Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]

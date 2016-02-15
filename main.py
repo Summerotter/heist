@@ -33,7 +33,7 @@ class City:
         '''called when ending a day at Hideout or Home, or by a Heist'''
         self.available_time = self.max_time + penalty
         self.total_days += 1
-        self.job.can_work = True
+        game.job.can_work = True
         game.character.update_everything()
         if self.current_day < 7:
             self.current_day += 1
@@ -90,7 +90,7 @@ class City:
                 game.bank.menu()
             elif choice == 'j':
                 desc = ''
-                self.job.menu()
+                game.job.menu()
             elif choice == 'm':
                 desc = ''
                 game.market.menu()
@@ -591,12 +591,12 @@ class EventManager:
         if event['type'] == 'skill_up':
             game.character.raise_skill_event(event['key'])
         if event['type'] == 'stat_mod_per_hour':
-            self.job.modified_per_hour_stat_cost[event['key']] += event['value']
+            game.job.modified_per_hour_stat_cost[event['key']] += event['value']
         if event['type'] == 'pay_mod':
-            self.job.modified_pay += event['value']
+            game.job.modified_pay += event['value']
         if event['type'] == 'time_mod':
-            self.job.modified_hours += event['value']
-        self.job.event_string = settings.get_text(event_key)
+            game.job.modified_hours += event['value']
+        game.job.event_string = config.get_text(event_key)
         
 
         
@@ -1259,12 +1259,10 @@ class Game:
             f = open('main.otter','wb')
             pickle.dump(self.save_list,f)
             f.close()
-            
         '''grab the save file master info here'''
         '''key = name, date last played, in-game date, earned xp, total wealth, filename'''
         
         
-    def start_game(self):
         from player import Character
         self.city = City(self)
         self.bank = Bank(self)
@@ -1274,14 +1272,19 @@ class Game:
         self.hideout = Hideout(self)
         self.character = Character(self)
         self.event_manager = EventManager(self)
+        self.job = Job(self)
+        self.loaded = False
         
+
+
+    
     def print_main_menu(self):
         '''lists the options for the main menu'''
         if self.loaded:
             r_text = '''"r" to run your loaded game, or 's' to save it.'''
         else:
             r_text = '''"r" to run a new game! '''
-        print("--| Main Menu |--"
+        print("--| Main Menu |--")
         print(r_text)
         print("Or 'l' to load a saved game, and 'q' to quit.")
 
@@ -1298,12 +1301,12 @@ class Game:
                 print("Entering active game")
                 run_menu = False
                 self.city.menu()
+                self.loaded = True
             elif choice == 'r' and not self.loaded:
                 print("Starting a new game")
                 intro()
                 run_menu = False
                 self.loaded = True
-                self.start_game()
                 self.city.menu()
             elif choice == 's':
                 self.save_menu()
@@ -1314,6 +1317,8 @@ class Game:
                 
     def print_save_load_menu(self):
         '''formats and makes pretty the info in self.save_life'''
+        for each in self.save_list:
+            print(each, self.save_list[each])
         
     def overwrite_prot(self):
         print("Warning, may overwrite save.")
@@ -1335,56 +1340,74 @@ class Game:
                 save_menu = False
             elif option in self.save_list:
                 if self.save_list[option] != None:
-                    if self.overwrite_prot():
+                    if overwrite_prot():
                         self.save_game(option)
                 else:
                     self.save_game(option)
                     
     def save_game(self,option):
-        name = game.character.first_name
-        xp = game.character.total_xp
-        time = game.city.total_days
+        name = self.character.first_name
+        xp = self.character.total_xp
+        time = self.city.total_days
         f = open('main.otter','wb')
         self.save_list[option] = ((name,xp,time))
-        pickle.dump(data,f)
+        pickle.dump(self.save_list,f)
         f.close()
         f = open(option+".otter",'wb')
-        pickle.dump(game,f)
+        pickle.dump(self,f)
         f.close()
-        
         
     def load_game(self,option):
         '''gets the filename from self.save_list[option], pickle loads it and sets game = loaded_game, and self.loaded to True'''
+        try:
+            f = open(option+".otter",'rb')
+            self = pickle.load(f)
+            f.close()
+            self.loaded = True
+            print("Game loaded this is load_game!")
+            print(self.loaded)
+        except:
+            print("Error: Game not loaded!")
+            self.loaded = False
         
+
+
+            
+            
     def load_menu(self):
         '''load version of save game, includes check if self.loaded is true for overwriting loaded games'''
+        menu = False
+        for each in self.save_list:
+            if self.save_list[each] != None:
+                menu = True
+        if not menu:
+            print("There are no save games to load!")
+        while menu:
+            self.print_save_load_menu()
+            choice = input("'x' to quit, or select an option to load that game: ").lower()
+            if choice == 'x':
+                menu = False
+            elif choice in self.save_list and self.loaded:
+                print("Warning: This will overwrite your loaded game.")
+                option = input("'Y' to load the game: ").lower()
+                if option == 'y':
+                    self.load_game(choice)
+                    menu = False
+            elif choice in self.save_list:
+                menu = False
+                self.load_game(choice)
+                self.loaded = True
+                x = input("Enter to continue")
                         
                         
 
-
-#game = Game()
-    
+import pickle
 from settings import GameConfiguration
 config = GameConfiguration()
 
-                    
-#city = City()
-#bank = Bank()
-#market = Market()
-#bar = Bar()
-#job = Job()
-#home = Home()
-#hideout = Hideout()
-#character = Character()
-#event_manager = EventManager()
-#director = Director()
+game = Game()
 
 
-
-##---End Loading Game Objects ---##
-
-
-game = Game()    
                     
 if __name__ == '__main__':
     #intro()

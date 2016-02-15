@@ -75,6 +75,14 @@ Entry 2:
 -I have no clue what was going on but player inventory now just {item_key:item_quantity} and that fixed it.
 -Buy/Sell implimented. Win conditoin implimented. LATE ALPHA.
 
+2/13/2016:
+Entry 1:
+-Today's goal, saving and loading.
+-First, move out event list to events.py and character to player.py
+-Minor changes to player.py added change_current_stat method for +/- healt/stam/stress
+-Game class operational. Plays intro on new game.
+-Save system started. Stopping for now.
+
 
 Alpha Roadmaps:
 -Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]

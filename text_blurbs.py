@@ -57,6 +57,23 @@ text = { 'text_key': {'eng' : 'this is the full text, in english', 'spa' : "no h
          'hide_evening': {'eng': "This is your hideout in the evening",},
          'hide_night': {'eng': "This is your hideout at night.",},
          
+        #new_beer, bar events
+        'beer1': {'eng': "Although really, it couldn't get worse than it already is.",},
+        'beer2': {'eng': "No, the beer couldn't get better - not at the prices the bar's customers can afford, at least.",},
+        'beer3': {'eng': "Yeah, you can taste the difference. Your wallet does, too.",},
+        #bar events
+        'bar_1': {'eng': "A bar fight breaks out. You get hurt, and bar cleared out for a bit.",},
+        'bar_2': {'eng': "Your SO grabs you to help wish a rush. You pocket the tips.",},
+        'bar_3': {'eng': "New cheap beer up. Tastes like it, too.",},
+        'bar_4': {'eng': "You've bumped into someone, and realize your pouch is lighter some money. Damn pickpocets.",},
+        'bar_5': {'eng': "The new beer tastes better. The price matches, though",},
+        #job events
+        'job_1': {'eng': "You seemed to understand mechanics better! +1 to your skill.",},
+        'job_2': {'eng': "Work was tiring today, and drained you an extra 1 stamina per hour.",},
+        'job_3': {'eng': "You got shifted to doing some dangerous stuff, but it has a +$1 an hour pay bonus.",},
+        'job_4': {'eng': "There was a problem with a shipment, and you were idle for an hour, which your boss says he aint paying you. -1 hours of work.",},
+
+         
          #scene descriptions, prefix type_letter + scene_number.
          'd1start': {'eng':"You've gotten a good look at how to get into the ship you want. There's a few ways in.",},
          'd1success': {'eng': "Bingo. That did the trick, and the loot in the cargo is yours.",},

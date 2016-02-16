@@ -88,6 +88,16 @@ Entry 1:
 -saving needs completion.
 -saving and loading vaguely tested passing.
 
+2/15/2016
+Alpha 1.1
+-Fixed error with going home and not having papers in inventory.
+-Fixed crash with Hideout still pointing to director and then self.director
+-Minor fixes to heist system
+
+Alpha 1.2
+-Prettied up Heist Choice menu
+-Fixed bug with Scene.test
+
 
 Alpha Roadmaps:
 -Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]

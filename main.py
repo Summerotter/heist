@@ -764,9 +764,10 @@ class Home:
         
         
     def menu(self):
-        if game.character.inventory['papers'] >0:
-            self.win()
-            return "Thank you for playing!"
+        if 'papers' in game.character.inventory:
+            if game.character.inventory['papers'] >0:
+                self.win()
+                return "Thank you for playing!"
             
         desc = config.get_text(self.prefix+game.city.time_of_day())
         print()
@@ -889,7 +890,7 @@ class Hideout:
         '''goes on a heist. May list multiple options with differing difficulty and reward levels. Seperate module'''
         '''requires certain threshold of health AND stamina to attempt'''
         print("Awww shit bro!.")
-        self.director.menu()
+        game.director.menu()
         
     def print_menu(self):
         
@@ -1032,7 +1033,7 @@ class Director:
         for key in self.scene_list:
             print()
             print()
-            scene = Scene(heist['type'],key,heist['difficulty'])
+            scene = Scene(heist['type'],key,heist['difficulty'],game)
             scene.menu()
         self.handle_results(heist['hours_cost'])
         self.end_heist(heist['hours_cost'])
@@ -1051,13 +1052,13 @@ class Director:
                 if x[1][1][2] != None:
                     self.results['items'].append(x[1][1][2])
         game.character.cash_on_hand = self.results['cash']
-        game.character.inventory['loot']['qty'] += self.results['loot']
+        game.character.inventory['loot'] += self.results['loot']
         ##assumes (item,qty,val) tupple result
         for item in self.results['items']:
             if item[0] in game.character.inventory:
-                game.character.inventory[item[0]]['qty'] += item[1]
+                game.character.inventory[item[0]] += item[1]
             else:
-                game.character.inventory[item[0]] = {'qty':item[1],'value':item[2]}
+                game.character.inventory[item[0]] = item[1]
         game.character.add_xp(self.xp)
         print("Here's the results of your run:")
         print("You gained",self.xp,"experience points.")
@@ -1085,8 +1086,11 @@ class Director:
             
     def print_menu(self):
         '''Lists Heist options and back to Hideout'''
-        for i in self.possible_heists:
-            print(i, self.possible_heists[i])
+        for i in range(1,len(self.possible_heists)+1):
+            print()
+            a = self.possible_heists[str(i)]
+            print(i,"- Location:",config.get_text(a['type'])+". Difficulty: "+str(a['difficulty'])+". Time Needed:",a['hours_cost'],":",config.get_text(a['blurb_id']))
+        print()
         print("Or x to go back to the Hideout")
     
     def menu(self):
@@ -1111,7 +1115,7 @@ class Scene:
     def __init__(self,type,scene_id,difficulty,game):
         #heist has 'difficulty', 'scene_count', 'type', 'blurb_id', 'scene_list'(list), and 'hours_cost'
         self.scene_id = scene_id
-        self.scene_data = self.director.scene_data[type][scene_id]
+        self.scene_data = game.director.scene_data[type][scene_id]
         
         self.option_list = [("1",'shoot'),("2",'sneak'),("3",'mechanics'),("4","stamina"),]
         self.options = {"1": {}, "2": {}, "3": {}, "4":{},}
@@ -1123,7 +1127,7 @@ class Scene:
         for option in self.option_list:
             id = self.scene_data['options'][option[1]][randint(0,len(self.scene_data['options'][option[1]])-1)]
             self.options[option[0]]['id'] = id
-            self.options[option[0]]['data'] = self.director.option_data[id]
+            self.options[option[0]]['data'] = game.director.option_data[id]
             self.options[option[0]]['data']['difficulty'] += difficulty
             #automates grabbing all that.
             self.options[option[0]]['hidden'] = self.req_check(self.options[option[0]]['data']['requirement'])
@@ -1183,14 +1187,14 @@ class Scene:
                 if results[0]:
                     print(config.get_text(self.options[choice]['id']+"success"))
                     print(config.get_text(self.scene_id+"success"))
-                    self.director.xp += 1
+                    game.director.xp += 1
                     run_menu = False
-                    self.director.results[str(len(self.director.results))] = (self.scene_id,results)
+                    game.director.results[str(len(game.director.results))] = (self.scene_id,results)
                     #should collapse back to director control
                 else:
                     run_menu = False
                     print(config.get_text(self.options[choice]['id']+"fail"))
-                    self.director.results[str(len(self.director.results))] = (self.scene_id,results)
+                    game.director.results[str(len(game.director.results))] = (self.scene_id,results)
                     #should collapse back to director control
                 print(config.get_text(self.scene_id+"end"))
                 pause_x()
@@ -1205,7 +1209,7 @@ class Scene:
             item_cost = data['suc_item']
             if stat_cost != None:
                 for each in stat_cost:
-                    self.game.character.stats[each[0]] += each[1]
+                    game.character.stats[each[0]]['current'] += each[1]
                     game.character.update_stat(each[0])
             if item_cost != None:
                 for item in item_cost:
@@ -1215,7 +1219,7 @@ class Scene:
             stat_cost = data['fail_cost']
             item_cost = data['fail_item']
             for each in stat_cost:
-                game.character.stats[each[0]] += each[1]
+                game.character.stats[each[0]]['current'] += each[1]
                 game.character.update_stat(each[0])
             if item_cost != None:
                 for item in item_cost:
@@ -1227,14 +1231,14 @@ class Scene:
         '''grabs reward per data'''
         mod = data - game.character.xp_stage
         temp = {}
-        for treasure in self.director.loot_table:
+        for treasure in game.director.loot_table:
             roll = randint(1,5) + mod
             if roll <=1:
-                temp[treasure] = self.director.loot_table[treasure]["1"]
+                temp[treasure] = game.director.loot_table[treasure]["1"]
             elif roll >=5:
-                temp[treasure] = self.director.loot_table[treasure]["5"]
+                temp[treasure] = game.director.loot_table[treasure]["5"]
             else:
-                temp[treasure] = self.director.loot_table[treasure][str(roll)]
+                temp[treasure] = game.director.loot_table[treasure][str(roll)]
         return (temp['loot'], temp['cash'], temp['item'])
         #note: Above defaults to None if None
 
@@ -1273,6 +1277,7 @@ class Game:
         self.character = Character(self)
         self.event_manager = EventManager(self)
         self.job = Job(self)
+        self.director = Director(self)
         self.loaded = False
         
 

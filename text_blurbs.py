@@ -117,6 +117,8 @@ text = { 'text_key': {'eng' : 'this is the full text, in english', 'spa' : "no h
          'd2': {'eng': "Guards down at the docks are tense. They're hiding something good."},
          'd3': {'eng': "One of your rivals got his ticket punched. His hideout was down at the docks..."},
          
+         #heist location
+         'dock': {'eng': "The Dockyard",},
          #win
          'win1': {'eng': '''With the new identity papers in hand, you have arrived home with a light heart and a joy you've not felt in a long while. You see your SO standing in the kitchen, and you pounce them happily, holding them tightly. They let out a soft sound of surprise as you stand there, just holding them.''',},
          'win2': {'eng': '''Eventually your SO speaks, 'What's going on hun? Did something happen?" You just nod, and show them the papers. They stand there speechless. "I managed to buy these," you say. "And they're pretty legitimate. You, me. A new life away from here. We'd still have to work, but... not here. Just us."''',},

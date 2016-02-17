@@ -1,3 +1,5 @@
+####edit
+
 class GameConfiguration:
     def __init__(self):
         self.minimum_heist_xp = 1

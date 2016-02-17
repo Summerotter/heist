@@ -1,5 +1,3 @@
-####edit
-
 class GameConfiguration:
     def __init__(self):
         self.minimum_heist_xp = 1
@@ -16,6 +14,7 @@ class GameConfiguration:
         #things like Black Market and Company Store stock/qty, basic_living_costs, bank fee, job wage.
         self.market_cost = 1.5
         self.market_sale = .5
+        self.symbol = "$"
         
         from text_blurbs import text
         self.text = text

@@ -98,6 +98,13 @@ Alpha 1.2
 -Prettied up Heist Choice menu
 -Fixed bug with Scene.test
 
+Alpha 1.3:
+-fixed crash, hideout was pointint to end_day; that had been renamed.
+-simplified menu for city as prototype, will impliment elsewhere
+-Splitting up classes into their own files.
+-Fixed hidden errors with item-based scene options
+-added new market cheat, "flashy" gives you a flash bang.
+
 
 Alpha Roadmaps:
 -Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]

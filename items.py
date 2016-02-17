@@ -27,4 +27,5 @@ black = {
     'cloth0':{'qty':0,'cost':0,'sell':2,'type':"equip",'attr':'sneak','value':0,'key':'cloth0',},
     'cloth1': {'qty':1,'cost':500,'sell':2,'type':"equip",'attr':'sneak','value':1,'key':'cloth1',},
     'cloth2': {'qty':1,'cost':1200,'sell':2,'type':"equip",'attr':'sneak','value':2,'key':'cloth2',},
+    'flashbang': {'qty':1,'cost':20,'sell':2,'type':"flashbang",'attr':None,'value':5,'key':'flashbang',},
 }

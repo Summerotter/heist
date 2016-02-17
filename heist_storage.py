@@ -27,10 +27,10 @@ scene_data_list = {
             'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': ['it1',]},
         },
         'd2': {
-            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': None},
+            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': ['it1',]},
         },
         'd3': {
-            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': None},
+            'options': {'shoot': ["sh1",],'sneak': ["sn1",],'mechanics': ["me1",], 'stamina': ['st1',], 'item': ['it1',]},
         },
     },
 }

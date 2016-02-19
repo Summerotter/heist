@@ -84,12 +84,12 @@ option_list = {
     },
     'it1': {
         'attribute': 'item',
-        'item': 'Flashbang',
+        'item': 'flashbang',
         'difficulty': 1,
         'suc_cost': None,
-        'suc_item': ('Flashbang',1),
+        'suc_item': (('flashbang',1),),
         'fail_cost': (('stress',-2),),
-        'fail_item': ('Flashbang',1),
-        'requirement': None,
+        'fail_item': (('flashbang',1),),
+        'requirement': ('item','flashbang',1),
     },
 }

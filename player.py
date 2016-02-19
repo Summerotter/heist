@@ -163,12 +163,16 @@ class Character:
         x = input("Press Enter to Continue")
         return run_menu
         
-    def has_item(self, key, value=1):
+    def has_item(self, key, value):
+        print("Character Has item func",key, value)
         if not key in self.inventory:
+            print("No key in inv")
             return False
-        elif self.inventory[key]['qty'] < value:
+        elif self.inventory[key] < value:
+            print("< of value in inv")
             return False
         else:
+            print("Has it.")
             return True
 
         

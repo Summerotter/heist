@@ -1345,7 +1345,7 @@ class Game:
                 save_menu = False
             elif option in self.save_list:
                 if self.save_list[option] != None:
-                    if overwrite_prot():
+                    if self.overwrite_prot():
                         self.save_game(option)
                 else:
                     self.save_game(option)

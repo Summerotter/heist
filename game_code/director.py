@@ -1,12 +1,12 @@
 class Director:
     def __init__(self,game):
         
-        import heist_storage
-        self.scene_data = heist_storage.scene_data_list
-        self.scene_types = heist_storage.scene_type_list
+        from game_data.heist_storage import scene_data_list,scene_type_list
+        self.scene_data = scene_data_list
+        self.scene_types = scene_type_list
         
-        import option_storage
-        self.option_data = option_storage.option_list
+        from game_data.option_storage import option_list
+        self.option_data = option_list
         
         
         self.possible_heists = {}
@@ -87,7 +87,7 @@ class Director:
         
             
     def run_heist(self, heist,game):
-        from scene import Scene
+        from .scene import Scene
         self.results = {}
         self.xp = game.config.minimum_heist_xp
         #clearing prior heists, adding initial value for XP
@@ -97,6 +97,8 @@ class Director:
             print()
             active_scene = Scene(heist['type'],key,heist['difficulty'],game)
             active_scene.menu(game)
+            print()
+            x = input("[Press Enter to Continue]")
         self.handle_results(heist['hours_cost'],game)
         self.end_heist(heist['hours_cost'],game)
         
@@ -128,6 +130,8 @@ class Director:
         if self.results['items']:
             print("You also earned ",self.results['items'])
         print("Not bad for ",hours,"hours of work, eh?")
+        print()
+        x = input("[Press Enter to Continue]")
         
 
     

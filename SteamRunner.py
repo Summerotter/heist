@@ -1,6 +1,6 @@
 import pickle
 
-from main import Game
+from game_code.main import Game
 
 
 

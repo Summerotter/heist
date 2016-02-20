@@ -44,7 +44,7 @@ option_list = {
     'sh1': {
         'attribute': 'shoot',
         'item': None,
-        'difficulty': 1,
+        'difficulty': 2,
         'suc_cost': None,
         'suc_item': None,
         'fail_cost': (('health',-1),('stress',-1),),
@@ -55,7 +55,7 @@ option_list = {
     'sn1': {
         'attribute': 'sneak',
         'item': None,
-        'difficulty': 1,
+        'difficulty': 3,
         'suc_cost': None,
         'suc_item': None,
         'fail_cost': (('stress',-2),('stamina',-1),),
@@ -65,7 +65,7 @@ option_list = {
     'me1': {
         'attribute': 'mechanics',
         'item': None,
-        'difficulty': 1,
+        'difficulty': 0,
         'suc_cost': (('stamina',-1),),
         'suc_item': None,
         'fail_cost': (('stamina',-1),('stress',-1),),
@@ -75,7 +75,7 @@ option_list = {
     'st1': {
         'attribute': 'stamina',
         'item': None,
-        'difficulty': 1,
+        'difficulty': 2,
         'suc_cost': (('stamina',-1),),
         'suc_item': None,
         'fail_cost': (('stamina',-2),),

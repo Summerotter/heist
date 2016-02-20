@@ -5,16 +5,16 @@ class Scene:
         #heist has 'difficulty', 'scene_count', 'type', 'blurb_id', 'scene_list'(list), and 'hours_cost'
         self.scene_id = scene_id
         self.scene_data = game.director.scene_data[type][scene_id]
-        self.scene_data['difficulty'] = difficulty
+        self.heist_difficulty = difficulty
         self.option_list = ('shoot','sneak','mechanics',"stamina",'item')
         self.options = {}
         #always shoot, sneak, mechanics, stamina.
 
         for option in self.option_list:
             if self.scene_data['options'][option] != None:
-                self.generate_option(option,self.scene_data['options'][option],game,difficulty)
+                self.generate_option(option,self.scene_data['options'][option],game,self.heist_difficulty)
                 
-    def generate_option(self,option, scene_data,game,difficulty):
+    def generate_option(self,option, scene_data,game,heist_difficulty):
         '''Picks an option for the slot, loads data, builds self.options and generates the srings.'''
         id = scene_data[game.randint(0,len(scene_data)-1)]
         data = game.director.option_data[id]
@@ -24,7 +24,7 @@ class Scene:
             self.options[key] = {}
             self.options[key]['id'] = id
             self.options[key]['data'] = data
-            self.options[key]['data']['difficulty'] += difficulty
+            self.options[key]['data']['mod_difficulty'] = heist_difficulty + self.options[key]['data']['difficulty']
             #automates grabbing all that.
             #Returns True if needs to be hidden.
             if self.options[key]['data']['attribute'] == "stamina":
@@ -41,11 +41,11 @@ class Scene:
                 strng = key+": +"
                 strng += game.config.get_text(id+"menu")
                 strng += ": ("+str(opt['item'])+str(qty)
-                strng += " Difficulty: "+str(opt['difficulty'])+")"
+                strng += " Difficulty: "+str(opt['mod_difficulty'])+")"
                 self.options[key]['string'] = strng
             else:
 
-                self.options[key]['string'] = key+": "+game.config.get_text(id+"menu")+": ("+opt['attribute']+str(opt['versus'])+" Difficulty: "+str(opt['difficulty'])+")"
+                self.options[key]['string'] = key+": "+game.config.get_text(id+"menu")+": ("+opt['attribute']+str(opt['versus'])+" Difficulty: "+str(opt['mod_difficulty'])+")"
             
             
         
@@ -81,6 +81,7 @@ class Scene:
         for each in range(1,len(self.options)+1):
             if str(each) in self.options:
                 print(self.options[str(each)]['string'])
+                print()
         
         
     def menu(self,game):
@@ -103,16 +104,17 @@ class Scene:
                 else:
                     run_menu = False
                     print(game.config.get_text(self.options[choice]['id']+"fail"))
+                    print(game.config.get_text(self.scene_id+"end"))
                     game.director.results[str(len(game.director.results))] = (self.scene_id,results)
                     #should collapse back to director control
-                print(game.config.get_text(self.scene_id+"end"))
+                
             else:
                 print("That isn't an option here!")
                 
         
     def test(self,id,data,game):
         '''unpack option data'''
-        if data['versus'] + game.randint(1,10) >= game.randint(1,5) + data['difficulty']:
+        if data['versus'] + game.randint(1,10) >= game.randint(1,5) + data['mod_difficulty']:
             stat_cost = data['suc_cost']
             item_cost = data['suc_item']
             if stat_cost != None:
@@ -122,7 +124,7 @@ class Scene:
             if item_cost != None:
                 for item in item_cost:
                     game.character.inventory[item[0]] -= item[1]
-            return (True, self.grant_reward(data['difficulty'],game),stat_cost,item_cost)
+            return (True, self.grant_reward(data['mod_difficulty'],game),stat_cost,item_cost)
         else:
             stat_cost = data['fail_cost']
             item_cost = data['fail_item']

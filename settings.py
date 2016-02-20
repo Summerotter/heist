@@ -16,7 +16,9 @@ class GameConfiguration:
         self.market_sale = .5
         self.symbol = "$"
         
-        from text_blurbs import text
+        self.save_dir="saves"
+        
+        from game_data.text_blurbs import text
         self.text = text
         
     def get_text(self, key):

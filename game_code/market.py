@@ -5,7 +5,7 @@ class Market:
         actual stock in store_stock and market_stock
         initialized as empty dicts, refresh method fixes that.
         '''
-        from items import white,black
+        from game_data.items import white,black
         self.store_items = white
         self.market_items = black
         self.store_prefix = "store_"

@@ -104,6 +104,11 @@ Alpha 1.3:
 -Splitting up classes into their own files.
 -Fixed hidden errors with item-based scene options
 -added new market cheat, "flashy" gives you a flash bang.
+-fixed saving and loading.
+-seperated files into subdirectories.
+-Fixed bug where menu would constantly loop
+-Fixed issue with heist difficulties
+-added some stops and better formatting in a few places.
 
 
 Alpha Roadmaps:

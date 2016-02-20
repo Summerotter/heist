@@ -164,12 +164,9 @@ class Character:
         return run_menu
         
     def has_item(self, key, value):
-        print("Character Has item func",key, value)
         if not key in self.inventory:
-            print("No key in inv")
             return False
         elif self.inventory[key] < value:
-            print("< of value in inv")
             return False
         else:
             print("Has it.")

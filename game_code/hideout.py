@@ -86,8 +86,8 @@ class Hideout:
         if time_lost > 0:
             time_lost = 0
         #this checks if you were 4 or fewer hours in time-debt, and puts you to 0 instead of a negative. No gaining hours this way!      
-        game.character.stats['stamina'] -= 1
-        game.character.stats['stress'] += 1
+        game.character.stats['stamina']['current'] -= 1
+        game.character.stats['stress']['current'] += 1
         game.advance_day(penalty=time_lost)
         #calls advance_day function for game.city. Passes penalty along.
         print("Blurb about getting no sleep or arriving back mid-day with no rest.")

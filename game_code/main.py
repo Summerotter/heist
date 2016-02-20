@@ -10,17 +10,19 @@ import pickle
 class Game:
     '''NOT IMPLIMENTED'''
     def __init__(self):
-        from settings import GameConfiguration
+        from .settings import GameConfiguration
         self.config = GameConfiguration()
         self.loaded = False
         self.save_list = {"a": None, "b":None, "c":None, "d":None,}
         import pickle
+        import os
+        if not self.config.save_dir in os.listdir():
+            os.mkdir(self.config.save_dir)
         try:
             f = open(self.config.save_dir+'/main.otter','rb')
             self.save_list = pickle.load(f)
             f.close()
         except FileNotFoundError:
-            import os
             f = open(self.config.save_dir+'/main.otter','wb')
             pickle.dump(self.save_list,f)
             f.close()

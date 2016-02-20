@@ -61,7 +61,7 @@ class Hideout:
         
     def end_night(self,game):
         '''ends the day. Consumes remaining hours. Restores health and stamina as per base, plus mods. Can cause event that raises stress for not being Home'''
-        hours = game.available_time
+        hours = game.available_time +4
         stamina_regained = (self.stamina_modifier + self.base_stamina_restoration) * hours
         health_regained = (self.health_modifier + self.base_health_restoration) * hours
         game.character.stats['health']['current'] += health_regained

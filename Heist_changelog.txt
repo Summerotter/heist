@@ -109,6 +109,13 @@ Alpha 1.3:
 -Fixed bug where menu would constantly loop
 -Fixed issue with heist difficulties
 -added some stops and better formatting in a few places.
+RC4
+-added fix for cx_freeze and module importing
+RC5:
+-Commented out menu line for home refering to adding/removing upgrades
+-Fixed "game.city" typoe in market.
+-Fixed issue with Market and Store stocks displaying 0 or negative goods.
+-Changed home/hideout end_day so hours are +4 from the 4 reserved for sleeping.
 
 
 Alpha Roadmaps:

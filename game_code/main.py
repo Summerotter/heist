@@ -105,7 +105,7 @@ class Game:
                 self.loaded = True
             elif choice == 'r' and not self.loaded:
                 print("Starting a new game")
-                #self.intro()
+                self.intro()
                 run_menu = False
                 self.loaded = True
                 self.city_menu()

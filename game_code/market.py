@@ -137,7 +137,7 @@ class Market:
             '''prints store specific menu'''
             print("This is the Company Store Menu!")
             print("You can check out what goods we have to [b]uy.")
-        print("Or e[x]it out to the game.city.")
+        print("Or e[x]it out to the city.")
             
                 
     def buy_menu(self,stock,game):
@@ -151,7 +151,10 @@ class Market:
             if str(choice).lower() == "x":
                 run_menu = False
             elif choice in stock['keys']:
-                self.buy(stock,stock['keys'][choice],game)
+                if stock[stock['keys'][choice]]['qty'] < 1:
+                    print("We're out of stock of that item")
+                else:
+                    self.buy(stock,stock['keys'][choice],game)
             else:
                 print("didn't catch that.")
         '''lists all the stock options for purchasing'''
@@ -160,7 +163,8 @@ class Market:
         for i in range(1,len(stock['keys'])+1):
             if i in stock['keys']:
                 item = stock[stock['keys'][i]]
-                print(str(i)+":",item['key']+":"+str(item['value']), "Cost: $"+str(item['cost'])," ",item['qty'],"available."  )
+                if item['qty'] > 0:
+                    print(str(i)+":",item['key']+":"+str(item['value']), "Cost: $"+str(item['cost'])," ",item['qty'],"available."  )
         print("Or 'x' to back out of this menu")
             
     def sell_menu(self,game):

@@ -116,17 +116,5 @@ RC5:
 -Fixed "game.city" typoe in market.
 -Fixed issue with Market and Store stocks displaying 0 or negative goods.
 -Changed home/hideout end_day so hours are +4 from the 4 reserved for sleeping.
-
-
-Alpha Roadmaps:
--Roadmap 2: End of Day function for Home and Hideout, stamina/stress loss at work, work events. [Complete/Beta]
--Roadmap 3: XP system and Skill/Stat Increases [Complete/Beta]
--Roadmap 4: Market and Items, Bar, End Of Game/Victory (Purchased papers) [Bar Done, no others yet]
--Roadmap 5: Heist System skeleton designed [DONE]
--Roadmap 6: Heist System skeleton written [DONE]
--Roadmap 7: Heist System fully implemented [Complete/Beta, needs polish]
--Roadmap 8: Saving and Loading System, Main Menu instead straight to city.menu() [Skeletoned, Game class should be ready to go.]
-
-Beta Roadmaps
--Roadmap 9: Polish the UI
--Ongoing: Expand Events/Heists
+-Split Main Menu and City back up again to seperate files - MainMenu is now part of SteamRunner.py, intro left to core.py (city).
+-Fixed "game.city" typoe in bar.

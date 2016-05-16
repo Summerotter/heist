@@ -5,7 +5,22 @@ class Home:
         self.base_stress_restoration = 1
         self.bonus_stam = 0
         self.bonus_stress = 0
-        self.upgrades = {'Example':{'upkeep':0,'type':'stam','value':0,},}
+        self.upgrades = {'Example':{'id':'key', 'upkeep':0,'type':'stam','value':0,},}
+        self.upgrade_list = {}
+        
+    def print_upgrade_menu(self,game):
+        #first we see if there's any upgrades installed here and list them
+        if len(self.upgrades) <= 1:
+            print("There are no upgrades installed.")
+        else:
+            for each in self.upgrade:
+                if each != "Example":
+                    print(each, self.upgrades[each])
+        print("--")
+        
+        for each in game.character.inventory:
+            if each[0] in game.upgrade_list:
+                self.upgrade_list[str(len(self.upgrade_list))] = game.upgrade_list[each[0]]
         
     def add_upgrade(self):
         '''removes upgrade from inventory and adds it. Checks 'type' and adds value to the bonus'''

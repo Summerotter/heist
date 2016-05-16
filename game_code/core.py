@@ -7,13 +7,10 @@ Written in Python3.4.2, Windows Environ
 '''
 
 class Game:
-    '''NOT IMPLIMENTED'''
     def __init__(self,config,main):
         self.config = config
         self.loaded = False
 
-        '''grab the save file master info here'''
-        '''key = name, date last played, in-game date, earned xp, total wealth, filename'''
         from random import randint
         self.randint = randint
 
@@ -26,6 +23,8 @@ class Game:
         from .player import Character
         from .event_manager import EventManager
         from .job import Job
+        from game_data.items import upgrades
+        
 
         self.director = Director(self)
         self.bank = Bank(self)
@@ -36,6 +35,7 @@ class Game:
         self.character = Character(self)
         self.event_manager = EventManager(self)
         self.job = Job(self)
+        self.upgrade_list = upgrades
 
         #Former City Stuff Start
 
@@ -100,6 +100,7 @@ class Game:
 
     def city_menu(self,new_game=False):
         if new_game:
+            self.character_maker()
             self.intro()
         print()
         desc = self.config.get_text(self.prefix+self.time_of_day())
@@ -122,3 +123,127 @@ class Game:
                 print("That is not a valid option")
 
 
+    def character_maker(self):
+    #first, the player
+        print()
+        print("First we need to know a bit about you.")
+        print()
+        name = False
+        while not name:
+            print()
+            firstname = input("What is your first name: ")
+            lastname = input("What is your last name: ")
+            nickname = input("What is your nickname: ")
+            print("You have put as your name", firstname,"'"+nickname+"'",lastname)
+            correct = input("If this is correct, enter 'y' to continue: ")
+            if correct.lower() == 'y':
+                name = True
+                self.character.first_name = firstname
+                self.character.last_name = lastname
+                self.character.nickname = nickname
+        
+        race = False
+        print()
+        races = ((1,'Wolf'),(2,'Fox'),(3,'Otter'),(4,'Coyote'),(5,'Rabbit'),(6,'Tiger'),(7,'Ermine'),(8,'Squirrel'),)
+        print("What race are you?")
+        while not race:
+            print()
+            print("[1] Wolf | [2] Fox | [3] Otter | [4] Coyote")
+            print("[5] Rabbit | [6] Tiger | [7] Ermine | [8] Squirrel")
+            choice = input("Please put in the number of the race you want: ")
+            if not choice in ["1","2","3","4","5","6","7","8"]:
+                print("Please put in a valid entry")
+                print()
+            else:
+                race_chosen = races[int(choice)-1]
+                print("You are a",race_chosen[1])
+                correct = input("Enter y to accept: ")
+                if correct.lower() == 'y':
+                    self.character.race = race_chosen
+                    race = True
+                else:
+                    print("Trying again")
+                    print()
+                    
+        gender = False
+        genders = ((1,'male'),(2,'female'),)
+        print()
+        print("Dev note: Due to programming limitations, genders are binary at this point in time.")
+        while not gender:
+            print()
+            print("Are you [1] Male or [2] Female?")
+            choice = input("Please put in the number of the option you want: ")
+            if not choice in ['1','2']:
+                print("Please enter a valid option.")
+            else:
+                selection = genders[int(choice)-1]
+                print("You have selected",selection[1].title())
+                confirm = input("If correct, enter 'y': ")
+                if confirm.lower() == 'y':
+                    self.character.gender = selection
+                    gender = True
+                else:
+                    print("Allright, retrying.")
+            
+                    
+    #and now, the SO
+        print()
+        print("And now, about your significant other...")
+        print()
+        name = False
+        while not name:
+            print()
+            firstname = input("What is your SO's first name: ")
+            lastname = input("What is your SO's last name: ")
+            nickname = input("What is your SO's nickname: ")
+            print("You have put as your SO's name", firstname,"'"+nickname+"'",lastname)
+            correct = input("If this is correct, enter 'y' to continue: ")
+            if correct.lower() == 'y':
+                name = True
+                self.character.so_first_name = firstname
+                self.character.so_last_name = lastname
+                self.character.so_nickname = nickname
+        
+        print()
+        race = False
+        races = ((1,'Wolf'),(2,'Fox'),(3,'Otter'),(4,'Coyote'),(5,'Rabbit'),(6,'Tiger'),(7,'Ermine'),(8,'Squirrel'),)
+        print("What race is your SO?")
+        while not race:
+            print()
+            print("[1] Wolf | [2] Fox | [3] Otter | [4] Coyote")
+            print("[5] Rabbit | [6] Tiger | [7] Ermine | [8] Squirrel")
+            choice = input("Please put in the number of the race you want: ")
+            if not choice in ["1","2","3","4","5","6","7","8"]:
+                print("Please put in a valid entry")
+                print()
+            else:
+                race_chosen = races[int(choice)-1]
+                print("Your SO is a",race_chosen[1])
+                correct = input("Enter y to accept: ")
+                if correct.lower() == 'y':
+                    self.character.so_race = race_chosen
+                    race = True
+                else:
+                    print("Let's try again")
+                    print()
+        
+        gender = False
+        genders = ((1,'male'),(2,'female'),)
+        print()
+        print("Dev note: Due to programming limitations, genders are binary at this point in time.")
+        while not gender:
+            print()
+            print("Is your SO [1] Male or [2] Female?")
+            choice = input("Please put in the number of the option you want: ")
+            if not choice in ['1','2']:
+                print("Please enter a valid option.")
+            else:
+                selection = genders[int(choice)-1]
+                print("Your so is",selection[1].title())
+                confirm = input("If this is correct, enter 'y': ")
+                if confirm.lower() == 'y':
+                    self.character.gender = selection
+                    gender = True
+                else:
+                    print("Allright, retrying.")
+        

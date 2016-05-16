@@ -118,3 +118,8 @@ RC5:
 -Changed home/hideout end_day so hours are +4 from the 4 reserved for sleeping.
 -Split Main Menu and City back up again to seperate files - MainMenu is now part of SteamRunner.py, intro left to core.py (city).
 -Fixed "game.city" typoe in bar.
+
+5/15/2016
+Alpha 1.4 RC1
+-fixed error in code/home.py
+-added player and SO name, race, and gender. Edited player.mirror some for it. No gameplay changes. 

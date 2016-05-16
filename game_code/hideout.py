@@ -50,11 +50,11 @@ class Hideout:
     def print_menu_xp(self,game):
         '''called by spend_xp_menu to do the needful'''
         print()
-        print("Put in the number of the one you want")
+        print("You have",game.character.available_xp+"xp you can spend.")
+        print("Enter the number of the skill or stat you wish to train")
         print("1: Max Health",game.character.stats['health']['max'],":",str(game.character.stats['health']['level'])+"xp for +1  |  4: Shoot",str(game.character.skills['shoot']['skill']),":",str(game.character.skills['shoot']['skill'])+"xp for +1") 
         print("2: Max Stamina",game.character.stats['stamina']['max'],":",str(game.character.stats['stamina']['level'])+"xp for +1 |  5: Sneak",str(game.character.skills['sneak']['skill']),":",str(game.character.skills['sneak']['skill'])+"xp for +1") 
         print("3: Max Stress",game.character.stats['stress']['max'],":",str(game.character.stats['stress']['level'])+"xp for +1  |  6: Mechanics",str(game.character.skills['mechanics']['skill']),":",str(game.character.skills['mechanics']['skill'])+"xp for +1")
-        print("Can build static form for this")
         print("or choose 'x' to exit")
         print()
         

@@ -199,7 +199,7 @@ class Character:
     def mirror(self):
         '''displays stats, called by any mirror object'''
         print(self.first_name,'"'+self.nickname+"'",self.last_name+": ",str(self.available_xp)+"/"+str(self.total_xp)+" xp available/total")
-        print(self.description)
+        print("Not a bad looking",self.gender[1],self.race[1].lower()+"!")
         print("-----------")
         print("Stats")
         for stat in self.stats:
@@ -216,8 +216,6 @@ class Character:
         print("Equipment:")
         print(equipment_line)
         print("-----------")
-        print("Not a bad looking person!")
-        print()
         x = input("Hit Enter to continue")
 
 

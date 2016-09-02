@@ -5,7 +5,22 @@ class Home:
         self.base_stress_restoration = 1
         self.bonus_stam = 0
         self.bonus_stress = 0
-        self.upgrades = {'Example':{'upkeep':0,'type':'stam','value':0,},}
+        self.upgrades = {'Example':{'id':'key', 'upkeep':0,'type':'stam','value':0,},}
+        self.upgrade_list = {}
+        
+    def print_upgrade_menu(self,game):
+        #first we see if there's any upgrades installed here and list them
+        if len(self.upgrades) <= 1:
+            print("There are no upgrades installed.")
+        else:
+            for each in self.upgrade:
+                if each != "Example":
+                    print(each, self.upgrades[each])
+        print("--")
+        
+        for each in game.character.inventory:
+            if each[0] in game.upgrade_list:
+                self.upgrade_list[str(len(self.upgrade_list))] = game.upgrade_list[each[0]]
         
     def add_upgrade(self):
         '''removes upgrade from inventory and adds it. Checks 'type' and adds value to the bonus'''
@@ -18,7 +33,7 @@ class Home:
         
     def end_night(self,game):
         '''ends the day. consumes all remaining hours, restores stamina and reduces stress via base rate per hour + modifiers. Can cause event that instead raises stress if Health threshhold is breached; the SO doesn't like seeing you hurt and will argue with you over the Heists'''
-        hours = game.available_time
+        hours = game.available_time +4
         if game.randint(1,100) >60 and game.character.stats['health']['penalty']:
             '''if I had a proper event system, this is where a spawn_event(home) would go!'''
             '''instead you just get a 40% chance of no stress healing and additional penalty if you're at or below Health threshold.'''
@@ -42,7 +57,7 @@ class Home:
     def print_menu(self):
 
         print()
-        print(" 'A'dd Upgrade | 'U'ninstall Upgrade ")
+#        print(" 'A'dd Upgrade | 'U'ninstall Upgrade ")
         print(" 'R'est        |  'L'eave ")
         print()
         
@@ -71,7 +86,7 @@ class Home:
             self.print_menu()
             choice = input("Will you do?: ").lower()
             if choice == 'l':
-                desc = ''
+                menu = False
                 print()
                 print("You leave your game.home.")
                 print()

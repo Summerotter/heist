@@ -3,6 +3,7 @@ items.py
 contains two dictionaries; white and black.
 Company Store uses the entire white list.
 Black Market uses some of the white, and some of the black randomly, determined by randint and market.refresh.
+Keys for items MUST be unique.
  '''
  
 white = { 
@@ -15,6 +16,7 @@ white = {
     'stamina1': {'qty':3,'cost':5,'sell':2,'type':"rest",'attr':'stamina','value':2,'key':'stamina1',},
     'stamina2': {'qty':2,'cost':9,'sell':2,'type':"rest",'attr':'stamina','value':3,'key':'stamina2',},
     'stamina3': {'qty':1,'cost':14,'sell':2,'type':"rest",'attr':'stamina','value':4,'key':'stamina3',},
+    'home_1': {'qty':1,'cost':500,'sell':125,'type':"upgrade",'attr':'stamina','value':2,'key':'home_1',},
 }
 
 black = {
@@ -28,4 +30,9 @@ black = {
     'cloth1': {'qty':1,'cost':500,'sell':2,'type':"equip",'attr':'sneak','value':1,'key':'cloth1',},
     'cloth2': {'qty':1,'cost':1200,'sell':2,'type':"equip",'attr':'sneak','value':2,'key':'cloth2',},
     'flashbang': {'qty':1,'cost':20,'sell':2,'type':"flashbang",'attr':None,'value':5,'key':'flashbang',},
+    'hide_1': {'qty':1,'cost':500,'sell':125,'type':"rest",'attr':'health','value':2,'key':'hide_1',},
 }
+
+upgrades = {
+    'home_1': {'id': 'home_1','upkeep':100,'type':'stamina','value':2,},
+    }

@@ -5,7 +5,7 @@ class EventManager:
         '''job table here temporarily. Will be moved to seperate events file at some point.'''
         '''then it would be self.job_event_table = imported thing from other file'''
         prefix = "event_"
-        from events import bar,job
+        from game_data.events import bar,job
         
         self.job_event_table = job
         self.job_keys = list(self.job_event_table.keys())

@@ -51,6 +51,8 @@ class Bank:
             return None
         if game.character.cash_on_hand < amt:
             print("You don't have that much money, back of the line!")
+        elif amt < 0:
+            print("You want to WHAT? You can't deposit negative money, back of the line!")
         else:
             game.character.cash_on_hand -= amt
             self.account += amt
@@ -71,6 +73,8 @@ class Bank:
             
         if self.account < amt:
             print("You don't have that much money, back of the line!")
+        elif amt < 0:
+            print("You want to WHAT? You can't withdraw negative money, back of the line!")
         else:
             game.character.cash_on_hand += amt
             self.account -= amt
@@ -101,15 +105,15 @@ class Bank:
             self.print_menu(game)
             choice = input("Your option: ").lower()
             if choice == "l":
-                print("You've left the game.bank.")
+                print("You've left the bank.")
                 desc = ''
                 if self.transaction:
                     game.available_time -= 1
                 game.city_menu()
             elif choice == 'd':
-                self.deposit()
+                self.deposit(game)
             elif choice == 'w':
-                self.withdraw()
+                self.withdraw(game)
             else:
                 print("That's not a valid option here.")
                 print()

@@ -56,7 +56,7 @@ class Bar:
         print("Current beer price is",self.symbol+str(self.beer_price),"and relieves",self.beer_stress,"of stress.")
         print("This is a game.bar. Buy booze, or flirt with your SO who works here.")
         print("[B]uy Booze for $ | [F]lirt with your SO")
-        print("Or e[x]it to the game.city.")
+        print("Or e[x]it to the city.")
         print()
         
     def menu(self,game):

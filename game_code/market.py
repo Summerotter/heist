@@ -168,6 +168,26 @@ class Market:
         print("Or 'x' to back out of this menu")
             
     def sell_menu(self,game):
+        items = self.get_sellable_items(game)
+        run_menu = True
+        while run_menu:
+            if len(items) == 0:
+                print("You don't have anything for sale!")
+                run_menu = False
+            else:
+                self.print_sell_menu(items)
+                choice = input("What is your choice: ").lower()
+                if game.config.is_int(choice):
+                    choice = int(choice)
+                if choice == 'x':
+                    run_menu = False
+                elif choice in items:
+                    self.sell(items[choice],game)
+                    items = self.get_sellable_items(game)
+                else:
+                    print("Did not get a valid option")
+                
+    def get_sellable_items(self,game):
         items = {}
         for item in game.character.inventory:
             if item in self.market_items and game.character.inventory[item] > 0: 
@@ -176,24 +196,8 @@ class Market:
                 items[len(items)+1]= (item,game.character.inventory[item],self.store_items[item]['sell'])
             elif item == 'loot' and game.character.inventory['loot'] > 0:
                 items[len(items)+1]= (item,game.character.inventory[item],game.character.loot_value)
-        run_menu = True
-        while run_menu:
-            if len(items) == 0:
-                print("You don't have anything for sale!")
-                run_menu = False
-            self.print_sell_menu(items)
-            choice = input("What is your choice: ").lower()
-            if game.config.is_int(choice):
-                choice = int(choice)
-            if choice == 'x':
-                run_menu = False
-            elif choice in items:
-                run_menu = False
-                self.sell(items[choice],game)
-            else:
-                print("Did not get a valid option")
-                
-                
+        return items        
+        
     def print_sell_menu(self,items):
         
         print()

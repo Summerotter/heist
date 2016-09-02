@@ -57,6 +57,18 @@ text = { 'text_key': {'eng' : 'this is the full text, in english', 'spa' : "no h
          'hide_evening': {'eng': "This is your hideout in the evening",},
          'hide_night': {'eng': "This is your hideout at night.",},
          
+        
+        #equipment desc
+        'tool0': {'eng': "Basic Tool",},
+        'tool1': {'eng': "Average Tool",},
+        'tool2': {'eng': "Good Tool",},
+        'gun0': {'eng': "Basic Gun",},
+        'gun1': {'eng': "Average Gun",},
+        'gun2': {'eng': "Good Gun",},
+        'cloth0': {'eng': "Basic Clothing",},
+        'cloth1': {'eng': "Average Clothing",},
+        'cloth2': {'eng': "Good Clothing",},
+         
         #new_beer, bar events
         'beer1': {'eng': "Although really, it couldn't get worse than it already is.",},
         'beer2': {'eng': "No, the beer couldn't get better - not at the prices the bar's customers can afford, at least.",},

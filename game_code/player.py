@@ -49,19 +49,19 @@ class Character:
             'shoot': {
                 'skill': 1,
                 'string': "Shooting",
-                'equipment': ('Basic Pistol',0),
+                'equipment': 'gun0',
                 'mod' : 1,
                 },
             'sneak': {
                 'skill':1,
                 'string': "Sneaking",
-                'equipment': ('Normal Clothing',0),
+                'equipment': 'cloth0',
                 'mod':1,
                 },
             'mechanics': {
                 'skill': 1,
                 'string': "Mechanics",
-                'equipment': ('Simple Tools',0),
+                'equipment': 'tool0',
                 'mod': 1,
                 },
             }
@@ -101,7 +101,7 @@ class Character:
             
     def update_skill(self,skill):
         '''updating modifier when leveling up or changing equipment'''
-        self.skills[skill]['mod'] = self.skills[skill]['skill'] + self.skills[skill]['equipment'][1]
+        self.skills[skill]['mod'] = self.skills[skill]['skill'] + game.market.market_items[self.skills[skill]['equipment']]['value']
             
     def update_everything(self):
         '''End of day function to force recalcs'''
@@ -196,7 +196,7 @@ class Character:
         for item in self.inventory:
             print(item,self.inventory[item])
             
-    def mirror(self):
+    def mirror(self, game):
         '''displays stats, called by any mirror object'''
         print(self.first_name,'"'+self.nickname+"'",self.last_name+": ",str(self.available_xp)+"/"+str(self.total_xp)+" xp available/total")
         print("Not a bad looking",self.gender[1],self.race[1].lower()+"!")
@@ -209,7 +209,7 @@ class Character:
         equipment_line = ""
         for skill in self.skills:
             skill_line += self.skills[skill]['string']+": +"+str(self.skills[skill]['skill'])+"  "
-            equipment_line += self.skills[skill]['equipment'][0]+": +"+str(self.skills[skill]['equipment'][1])+"  "
+            equipment_line += game.config.get_text(self.skills[skill]['equipment'])+": +"+str(game.market.market_items[self.skills[skill]['equipment']]['value'])+"  "
         print("Skill Levels:")
         print(skill_line)
         print("-----------")

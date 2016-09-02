@@ -3,6 +3,7 @@ items.py
 contains two dictionaries; white and black.
 Company Store uses the entire white list.
 Black Market uses some of the white, and some of the black randomly, determined by randint and market.refresh.
+Keys for items MUST be unique.
  '''
  
 white = { 

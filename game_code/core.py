@@ -98,9 +98,10 @@ class Game:
         print("A for Bar | X for Main Menu")
         print()
 
-    def city_menu(self,new_game=False):
+    def city_menu(self,skip=False,new_game=False):
         if new_game:
-            self.character_maker()
+            self.character_maker(skip)
+        if new_game and not skip:
             self.intro()
         print()
         desc = self.config.get_text(self.prefix+self.time_of_day())
@@ -123,8 +124,21 @@ class Game:
                 print("That is not a valid option")
 
 
-    def character_maker(self):
+    def character_maker(self,skip):
     #first, the player
+        if skip:
+            self.character.first_name = "John"
+            self.character.last_name = "Doe"
+            self.character.nickname = "Johny"
+            self.character.race = (2,"Fox")
+            self.character.gender = (1,"male")
+            self.character.so_first_name = "Jim"
+            self.character.so_last_name = "Jacobs"
+            self.character.so_nickname = "Jimmy"
+            self.character.so_race = (2,"Fox")
+            self.character.so_gender = (1,'male')
+            self.character.cash_on_hand = 100000
+            return None
         print()
         print("First we need to know a bit about you.")
         print()
@@ -242,7 +256,7 @@ class Game:
                 print("Your so is",selection[1].title())
                 confirm = input("If this is correct, enter 'y': ")
                 if confirm.lower() == 'y':
-                    self.character.gender = selection
+                    self.character.so_gender = selection
                     gender = True
                 else:
                     print("Allright, retrying.")

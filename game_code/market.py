@@ -74,30 +74,39 @@ class Market:
         '''checks if its market or store by loking for papers
         then reduces the qty by 1
         '''
-        if 'papers' in stock:
-            self.market_stock[item]['qty'] -= 1
-        else:
-            self.store_stock[item]['qty'] -= 1
+#        if 'papers' in stock:
+#            self.market_stock[item]['qty'] -= 1
+#        else:
+#            self.store_stock[item]['qty'] -= 1
         
     def buy(self, stock, item,game):
         '''removes cash-on-hand from character, adds item to inventory and removes from stock'''
         print("Item: ", item)
+        print("This is item qty before doing anything", stock[item]['qty'])
         if stock[item]['qty'] < 1:
             print("They're out of this item.")
         elif game.character.cash_on_hand >= stock[item]['cost']:
             print("This item costs $"+str(stock[item]['cost'])+", and you have $"+str(game.character.cash_on_hand))
+            print()
             choice = input("Enter 'y' to confirm purchase: ").lower()
             if choice == 'y':
-                game.character.add_item(item,stock[item])
+                game.character.add_item(item,stock[item],game)
+                print()
+                print("This is item qty after character.add_item", stock[item]['qty'])
+                print()
                 game.character.cash_on_hand -= stock[item]['cost']
-                if 'papers' in stock:
-                    print(self.market_stock[item]['qty'])
-                    self.market_stock[item]['qty'] -= 1
-                    print(self.market_stock[item]['qty'])
-                else:
-                    self.store_stock[item]['qty'] -= 1
-                    
+#                if 'papers' in stock:
+#                    self.market_stock[item]['qty'] -= 1
+#                else:
+#                    self.store_stock[item]['qty'] -= 1
+#                stock[item]['qty'] -= 1
+                print()
+                print("This is item qty after removing cash on hand", stock[item]['qty'])
+                print()
                 self.transaction = True
+                return stock
+                    
+                
             else:
                 print("You can come back later.")
         else:
@@ -140,7 +149,7 @@ class Market:
         print("Or e[x]it out to the city.")
             
                 
-    def buy_menu(self,stock,game):
+    def buy_menu(self,stock,game,market):
         run_menu = True
         while run_menu:
             self.print_buy_menu(stock)
@@ -154,7 +163,7 @@ class Market:
                 if stock[stock['keys'][choice]]['qty'] < 1:
                     print("We're out of stock of that item")
                 else:
-                    self.buy(stock,stock['keys'][choice],game)
+                    stock = self.buy(stock,stock['keys'][choice],game)
             else:
                 print("didn't catch that.")
         '''lists all the stock options for purchasing'''
@@ -190,20 +199,28 @@ class Market:
     def get_sellable_items(self,game):
         items = {}
         for item in game.character.inventory:
-            if item in self.market_items and game.character.inventory[item] > 0: 
-                items[len(items)+1]= (item,game.character.inventory[item],self.market_items[item]['sell'])
-            elif item in self.store_items and game.character.inventory[item] > 0:
-                items[len(items)+1]= (item,game.character.inventory[item],self.store_items[item]['sell'])
-            elif item == 'loot' and game.character.inventory['loot'] > 0:
-                items[len(items)+1]= (item,game.character.inventory[item],game.character.loot_value)
+            if game.character.inventory[item]['qty'] > 0:
+                key = len(items)+1
+                if item == 'loot' and game.character.inventory['loot'] > 0:
+                    items[key]= game.character.inventory[item]
+                    itmes[key]['sell'] = game.character.loot_value
+                else:
+                    items[key] = game.character.inventory[item]
+        for item in game.character.equipment:
+            if game.character.equipment[item]['qty'] >0:
+                key = len(items)+1
+                items[key]= game.character.equipment[item]
+        for i in items:
+            print(i, items[i])
         return items        
         
     def print_sell_menu(self,items):
         
         print()
-        for i in range(len(items)+1):
-            if i in items:
-                print(i, "Item: ",items[i][0], "Qty: ",items[i][1], "Sale Price: ",items[i][2])
+        size = len(items)+1
+        for i in range(size):
+            if i in items.keys():
+                print(i, "Item: ",items[i])
         print("And 'x' to leave this menu.")
         print()
         
@@ -231,7 +248,7 @@ class Market:
                 self.sell_menu(game)
             elif choice == 'b':
                 print("You begin to brows some wares.")
-                self.buy_menu(stock,game)
+                self.buy_menu(stock,game,market)
             elif choice == "rich":
                 game.character.cash_on_hand += 1000000
                 print("And you've now got a million dollars!")
@@ -239,10 +256,6 @@ class Market:
             elif choice == "looty":
                 game.character.inventory['loot'] = 100
                 print("And some Heinikan")
-                x = input("enter to continue")
-            elif choice == "flashy":
-                print("Flashy flashy!")
-                game.character.inventory['flashbang'] = 1
                 x = input("enter to continue")
             else:
                 print("Didn't recognize that option")

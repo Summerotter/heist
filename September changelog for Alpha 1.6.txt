@@ -21,10 +21,23 @@ Market:
 -Sell menu did not auto-close when no items for sale (fixed)
 -Sell menu kicks back to main menu (fixed)
 -Sell action confirm outputing raw list data
+-Buy menu using keys not blurbs
+-Edited get_sellable_items for equipment
+-Something wrong with Buy menu (option 1 isn't shown, qty not right, extra 0 and 1?)
 
 Text Blurbs:
 -Added names for equipment
 
-Character:
+Player:
 -Added text-getting for equipment
--Changed character.equipment to a key, pulling from city.market.market_items for now
+-Changed skills.equipment to a key of .equipment
+-Added self.equipment dict
+-Added change_, add_ and remove_equipment methods
+-Modified add_item to check and pass to add_equip
+
+Core:
+-Added skip attribute for character_maker
+-Fixed bug with gender for SO
+
+SteamRunner.py:
+-Added 'skip' argument to skip character generation

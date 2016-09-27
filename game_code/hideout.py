@@ -109,7 +109,7 @@ class Hideout:
         self.menu(game)
         
     def inventory(self,game):
-        game.character.print_inventory()
+        game.character.print_inventory(game)
         self.menu(game)
         
     def exit(self,game):

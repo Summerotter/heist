@@ -123,3 +123,54 @@ RC5:
 Alpha 1.4 RC1
 -fixed error in code/home.py
 -added player and SO name, race, and gender. Edited player.mirror some for it. No gameplay changes. 
+
+-----
+
+9/26/2016
+Alpha 1.6
+
+Main menu:
+-Save and load menu prints list/tupple
+
+Hideout:
+-Mirror needs ladjust/radjust formatting
+-Inventory needs proper formatting
+-Train causes CTD (fixed)
+-XP print_menu needs additional lr/just formating
+-XP menu title needs renaming (fixed)
+-Now passing game to character.mirror
+
+Bank:
+-Withdraw causes CTD (fixed)
+-Deposit causes CTD (fixed)
+-Can withdraw and deposit negative amounts (fixed)
+-leaving line calls it game.bank (fixed)
+
+Market:
+-Main menu needs some more formatting
+-Buy menu needs formatting and spacing
+-Sell menu did not auto-close when no items for sale (fixed)
+-Sell menu kicks back to main menu (fixed)
+-Sell action confirm outputing raw list data
+-Buy menu using keys not blurbs
+-Edited get_sellable_items for equipment
+-Something wrong with Buy menu (option 1 isn't shown, qty not right, extra 0 and 1?)
+
+Text Blurbs:
+-Added names for equipment
+
+Player:
+-Added text-getting for equipment
+-Changed skills.equipment to a key of .equipment
+-Added self.equipment dict
+-Added change_, add_ and remove_equipment methods
+-Modified add_item to check and pass to add_equip
+
+Core:
+-Added skip attribute for character_maker
+-Fixed bug with gender for SO
+
+SteamRunner.py:
+-Added 'skip' argument to skip character generation (when running from CLI, python SteamRunner.py skip)
+
+----

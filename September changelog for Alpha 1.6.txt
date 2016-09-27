@@ -40,4 +40,4 @@ Core:
 -Fixed bug with gender for SO
 
 SteamRunner.py:
--Added 'skip' argument to skip character generation
+-Added 'skip' argument to skip character generation (when running from CLI, python SteamRunner.py skip)
